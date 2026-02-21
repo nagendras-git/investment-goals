@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Investment Goals</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg: #F2F2F7; --card: #FFFEF5; --card2: #FFFFFF;
+    --text-primary: #1C1C1E; --text-secondary: #8E8E93; --text-tertiary: #636366;
+    --divider: #E5E5EA;
+    --blue: #007AFF; --green: #34C759; --orange: #FF9500; --red: #FF3B30; --purple: #AF52DE;
+    --font: -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  }
+  body { font-family: var(--font); background: var(--bg); min-height: 100vh; padding-bottom: 100px; }
+
+  /* NAV */
+  .nav { position: sticky; top: 0; z-index: 100; background: rgba(242,242,247,0.92);
+    backdrop-filter: blur(20px); padding: 12px 20px 10px;
+    border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .nav-inner { max-width: 480px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+  .nav-title { font-size: 17px; font-weight: 700; color: var(--text-primary); }
+  .nav-subtitle { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+  .btn-add { background: var(--blue); color: white; border: none; border-radius: 20px;
+    padding: 7px 16px; font-size: 14px; font-weight: 600; font-family: var(--font); cursor: pointer; }
+  .btn-add:active { opacity: 0.8; }
+
+  /* CONTENT */
+  .content { max-width: 480px; margin: 0 auto; padding: 16px 16px 20px; }
+
+  /* SUMMARY */
+  .summary-bar { background: var(--card2); border-radius: 14px; padding: 16px;
+    margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+  .summary-label { font-size: 11px; font-weight: 600; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; }
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .summary-stat { background: var(--bg); border-radius: 10px; padding: 8px 10px; }
+  .summary-stat .s-label { font-size: 10px; color: var(--text-secondary); font-weight: 500; }
+  .summary-stat .s-value { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-top: 2px; }
+
+  /* SECTION */
+  .section-header { font-size: 13px; font-weight: 600; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 0.07em; padding: 6px 4px 8px; }
+
+  /* GOAL CARD */
+  .goal-card { background: var(--card); border-radius: 14px; margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07); overflow: hidden; }
+  .card-header { padding: 14px 16px 0; display: flex; justify-content: space-between; align-items: flex-start; }
+  .card-header-left { flex: 1; }
+  .card-category { font-size: 11px; color: var(--text-secondary); font-weight: 500; margin-bottom: 3px; }
+  .card-title { font-size: 16px; font-weight: 700; color: var(--text-primary);
+    line-height: 1.2; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .status-pill { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 10.5px; font-weight: 600; }
+  .pill-green { background: #D1F4DC; color: #1A7F37; }
+  .pill-orange { background: #FFF0D9; color: #B25000; }
+  .pill-blue { background: #D6EAFF; color: #0055B3; }
+  .pill-red { background: #FFD9D9; color: #B30000; }
+  .pill-purple { background: #F0E0FF; color: #7B2FBE; }
+  .card-actions { display: flex; gap: 8px; margin-left: 10px; }
+  .btn-icon { background: var(--bg); border: none; border-radius: 8px; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    font-size: 14px; color: var(--text-secondary); flex-shrink: 0; }
+  .btn-icon:active { opacity: 0.6; }
+  .card-divider { height: 1px; background: var(--divider); margin: 12px 16px; }
+  .card-body { padding: 0 16px 14px; }
+  .info-row { display: flex; justify-content: space-between; padding: 4px 0; }
+  .info-label { font-size: 13.5px; color: var(--text-secondary); }
+  .info-value { font-size: 13.5px; color: var(--text-primary); font-weight: 500; text-align: right; }
+  .info-value.orange { color: var(--orange); font-weight: 600; }
+  .info-value.green { color: var(--green); font-weight: 600; }
+  .info-value.blue { color: var(--blue); font-weight: 600; }
+  .sub-section { font-size: 10.5px; font-weight: 600; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 0.07em; margin: 10px 0 5px; }
+  .fund-row { display: flex; justify-content: space-between; padding: 3px 0; }
+  .fund-name { font-size: 13px; color: #3A3A3C; }
+  .fund-amt { font-size: 13px; color: var(--text-primary); font-weight: 600; }
+  .card-note { margin-top: 10px; padding: 9px 11px; background: var(--bg);
+    border-radius: 9px; font-size: 12px; color: var(--text-tertiary); line-height: 1.5; }
+  .card-note span { font-weight: 600; color: #3A3A3C; }
+
+  /* TIMELINE */
+  .timeline-card { background: var(--card2); border-radius: 14px; padding: 16px;
+    margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+  .timeline-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 14px; }
+  .tl-item { display: flex; gap: 12px; padding: 5px 0; }
+  .tl-left { display: flex; flex-direction: column; align-items: center; width: 44px; flex-shrink: 0; }
+  .tl-year { font-size: 11.5px; font-weight: 700; color: var(--text-secondary); white-space: nowrap; }
+  .tl-line { width: 1px; flex: 1; background: var(--divider); margin-top: 4px; min-height: 12px; }
+  .tl-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+  .tl-event { font-size: 13px; color: var(--text-primary); line-height: 1.5; padding-bottom: 8px; flex: 1; }
+
+  /* CHECKLIST */
+  .checklist-card { background: var(--card2); border-radius: 14px; padding: 16px;
+    margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+  .check-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; cursor: pointer; }
+  .check-box { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--divider);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .check-box.checked { background: var(--green); border-color: var(--green); color: white; font-size: 12px; }
+  .check-text { font-size: 13.5px; color: var(--text-primary); flex: 1; }
+  .check-text.done { text-decoration: line-through; color: var(--text-secondary); }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200;
+    display: none; align-items: flex-end; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--card2); border-radius: 20px 20px 0 0; padding: 20px 20px 40px;
+    width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s ease; }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-handle { width: 36px; height: 4px; background: var(--divider); border-radius: 2px; margin: 0 auto 16px; }
+  .modal-title { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 20px; }
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; display: block; }
+  .form-input, .form-select, .form-textarea { width: 100%; background: var(--bg);
+    border: 1.5px solid transparent; border-radius: 10px; padding: 11px 13px;
+    font-size: 15px; font-family: var(--font); color: var(--text-primary); outline: none; transition: border-color 0.2s; }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--blue); }
+  .form-textarea { resize: vertical; min-height: 70px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .fund-edit-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+  .fund-edit-row .form-input { flex: 1; }
+  .fund-edit-row .form-input.amt { flex: 0 0 100px; }
+  .btn-remove-fund { background: #FFD9D9; border: none; border-radius: 8px; width: 32px; height: 40px;
+    color: var(--red); font-size: 16px; cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; }
+  .btn-add-fund { background: var(--bg); border: 1.5px dashed var(--divider); border-radius: 10px;
+    padding: 9px; width: 100%; font-size: 13px; color: var(--blue); font-weight: 600;
+    font-family: var(--font); cursor: pointer; margin-top: 4px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-cancel { flex: 1; background: var(--bg); border: none; border-radius: 12px; padding: 14px;
+    font-size: 15px; font-weight: 600; color: var(--text-primary); font-family: var(--font); cursor: pointer; }
+  .btn-save { flex: 2; background: var(--blue); border: none; border-radius: 12px; padding: 14px;
+    font-size: 15px; font-weight: 600; color: white; font-family: var(--font); cursor: pointer; }
+
+  /* LOADING */
+  .loading { text-align: center; padding: 40px 20px; color: var(--text-secondary); font-size: 14px; }
+  .spinner { width: 28px; height: 28px; border: 3px solid var(--divider);
+    border-top-color: var(--blue); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #1C1C1E; color: white; padding: 10px 20px; border-radius: 20px;
+    font-size: 13.5px; font-weight: 500; opacity: 0; transition: all 0.3s ease;
+    z-index: 300; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.error { background: var(--red); }
+
+  .empty-state { text-align: center; padding: 30px 20px; color: var(--text-secondary); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-inner">
+    <div>
+      <div class="nav-title">📋 Investment Goals</div>
+      <div class="nav-subtitle" id="last-updated">Loading...</div>
+    </div>
+    <button class="btn-add" onclick="openAddModal()">＋ Add Goal</button>
+  </div>
+</div>
+
+<div class="content">
+  <div class="summary-bar">
+    <div class="summary-label">Portfolio Snapshot</div>
+    <div class="summary-grid">
+      <div class="summary-stat"><div class="s-label">Portfolio</div><div class="s-value">₹26L</div></div>
+      <div class="summary-stat"><div class="s-label">Monthly SIP</div><div class="s-value">₹80k</div></div>
+      <div class="summary-stat"><div class="s-label">Goals</div><div class="s-value" id="summary-goals">—</div></div>
+    </div>
+  </div>
+
+  <div id="goals-container"><div class="loading"><div class="spinner"></div>Loading goals...</div></div>
+
+  <div class="section-header">🗓 Roadmap</div>
+  <div class="timeline-card" id="timeline-container"></div>
+
+  <div class="section-header">✅ Annual Checklist</div>
+  <div class="checklist-card" id="checklist-container"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title">Add Goal</div>
+    <div class="form-group">
+      <label class="form-label">Goal Name</label>
+      <input class="form-input" id="f-name" placeholder="e.g. Son's Graduation" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-select" id="f-category">
+          <option>Education</option>
+          <option>FIRE / Retirement</option>
+          <option>Housing</option>
+          <option>Vacation</option>
+          <option>Gold / Hedge</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="f-status">
+          <option value="on-track">On Track</option>
+          <option value="in-progress">In Progress</option>
+          <option value="auto-funded">Auto-Funded</option>
+          <option value="not-started">Not Started</option>
+          <option value="complete">Complete</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Target Amount</label>
+        <input class="form-input" id="f-target" placeholder="e.g. ₹1.3 Crore" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Target Year</label>
+        <input class="form-input" id="f-year" placeholder="e.g. 2040" type="number" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Emoji Icon</label>
+        <input class="form-input" id="f-emoji" placeholder="🎓" maxlength="2" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Current Status Note</label>
+        <input class="form-input" id="f-current" placeholder="e.g. Corpus building" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tagged Funds & Monthly SIP</label>
+      <div id="funds-editor"></div>
+      <button class="btn-add-fund" onclick="addFundRow()">＋ Add Fund</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Exit Strategy / Notes</label>
+      <textarea class="form-textarea" id="f-note" placeholder="e.g. 2037 → Move corpus to HDFC BAF → SWP from 2040"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveGoal()">Save Goal</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ───────────────────────────────────────────────────────────────────
+const API_BASE = '/api/goals';
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let goals = [];
+let editingId = null;
+let checkedItems = JSON.parse(localStorage.getItem('checkedItems') || '{}');
+
+const TIMELINE = [
+  { year: "2026–27", event: "Loan closure phase. All SIPs running. Parents paying ₹5–6L/year toward personal loan.", color: "#FF3B30" },
+  { year: "2028",    event: "Personal loan closed 🎉 Start House Down Payment SIP (₹25k). Extra SIPs (₹28k). Total → ₹1.33L/month.", color: "#FF9500" },
+  { year: "2031",    event: "Move Intermediate education corpus to HDFC BAF.", color: "#FF9500" },
+  { year: "2032–33", event: "House purchase using ₹25–30L down payment. Evaluate FIRE readiness.", color: "#007AFF" },
+  { year: "2033–34", event: "FIRE 🔥 Stop working. Start SWP ₹60–70k/month from HDFC BAF.", color: "#34C759" },
+  { year: "2037",    event: "Move Graduation corpus to HDFC BAF. Start SWP for college fees.", color: "#34C759" },
+  { year: "2038",    event: "Son's Intermediate 🎓 SWP from BAF covers ₹16L.", color: "#34C759" },
+  { year: "2040",    event: "Son's Graduation 🎓 SWP from BAF covers ₹1.3Cr.", color: "#34C759" },
+  { year: "2041",    event: "Move Higher Education corpus to HDFC BAF.", color: "#34C759" },
+  { year: "2044",    event: "Son's Higher Education 🎓 SWP from BAF covers ₹1.8Cr.", color: "#34C759" }
+];
+
+const CHECKLIST = [
+  "Increase SIP by 10% every year 📈",
+  "Rebalance if equity drifts above 75% ⚖️",
+  "Check loan outstanding (parents contribution) 🏦",
+  "Review gold allocation (Goldbees active?) 🥇",
+  "Track goal corpus vs target 🎯",
+  "Don't panic sell during corrections 🧘"
+];
+
+// ── API CALLS ─────────────────────────────────────────────────────────────────
+
+async function fetchGoals() {
+  try {
+    const res = await fetch(API_BASE);
+    if (!res.ok) throw new Error('Failed to fetch');
+    goals = await res.json();
+    // normalize field name from backend
+    goals = goals.map(g => ({ ...g, year: g.targetYear || 0 }));
+    renderGoals();
+    updateStatus('Synced just now');
+  } catch (e) {
+    showToast('Failed to load goals. Is the server running?', true);
+    document.getElementById('goals-container').innerHTML =
+      `<div class="empty-state">⚠️ Could not connect to server.<br>Make sure Spring Boot is running on port 8080.</div>`;
+  }
+}
+
+async function apiCreateGoal(payload) {
+  const res = await fetch(API_BASE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+async function apiUpdateGoal(id, payload) {
+  const res = await fetch(`${API_BASE}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+async function apiDeleteGoal(id) {
+  const res = await fetch(`${API_BASE}/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error(await res.text());
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+
+function renderGoals() {
+  const container = document.getElementById('goals-container');
+  document.getElementById('summary-goals').textContent = goals.length;
+
+  if (goals.length === 0) {
+    container.innerHTML = `<div class="empty-state">No goals yet. Tap <b>+ Add Goal</b> to get started.</div>`;
+    return;
+  }
+
+  const groups = {};
+  goals.forEach(g => {
+    if (!groups[g.category]) groups[g.category] = [];
+    groups[g.category].push(g);
+  });
+
+  let html = '';
+  for (const [cat, items] of Object.entries(groups)) {
+    html += `<div class="section-header">${catEmoji(cat)} ${cat}</div>`;
+    items.forEach(g => { html += goalCardHTML(g); });
+  }
+  container.innerHTML = html;
+}
+
+function catEmoji(c) {
+  return {'Education':'🎓','FIRE / Retirement':'🔥','Housing':'🏠','Vacation':'✈️','Gold / Hedge':'🥇'}[c] || '📌';
+}
+
+function statusConfig(s) {
+  return {
+    'on-track':    { label: 'On Track',    cls: 'pill-green' },
+    'in-progress': { label: 'In Progress', cls: 'pill-orange' },
+    'auto-funded': { label: 'Auto-Funded', cls: 'pill-blue' },
+    'not-started': { label: 'Not Started', cls: 'pill-red' },
+    'complete':    { label: 'Complete ✓',  cls: 'pill-purple' }
+  }[s] || { label: s, cls: 'pill-orange' };
+}
+
+function goalCardHTML(g) {
+  const sc = statusConfig(g.status);
+  const fundsHTML = g.funds && g.funds.length
+    ? `<div class="sub-section">Tagged Funds</div>${g.funds.map(f =>
+        `<div class="fund-row"><span class="fund-name">${f.name}</span><span class="fund-amt">${f.amount || ''}</span></div>`
+      ).join('')}` : '';
+
+  return `
+  <div class="goal-card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <div class="card-category">${g.category}</div>
+        <div class="card-title">${g.emoji || '📌'} ${g.name}
+          <span class="status-pill ${sc.cls}">${sc.label}</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="btn-icon" onclick="openEditModal(${g.id})">✏️</button>
+        <button class="btn-icon" style="color:var(--red)" onclick="deleteGoal(${g.id})">🗑</button>
+      </div>
+    </div>
+    <div class="card-divider"></div>
+    <div class="card-body">
+      ${g.target ? `<div class="info-row"><span class="info-label">Target Amount</span><span class="info-value orange">${g.target}</span></div>` : ''}
+      ${g.year ? `<div class="info-row"><span class="info-label">Target Year</span><span class="info-value">${g.year}</span></div>` : ''}
+      ${g.current ? `<div class="info-row"><span class="info-label">Status Note</span><span class="info-value" style="font-size:12px;color:#636366;max-width:55%">${g.current}</span></div>` : ''}
+      ${fundsHTML}
+      ${g.note ? `<div class="card-note">${g.note.replace(/\n/g,'<br>')}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderTimeline() {
+  document.getElementById('timeline-container').innerHTML =
+    `<div class="timeline-title">📅 Year-by-Year Roadmap</div>` +
+    TIMELINE.map((t, i) => `
+      <div class="tl-item">
+        <div class="tl-left">
+          <div class="tl-year">${t.year}</div>
+          ${i < TIMELINE.length-1 ? '<div class="tl-line"></div>' : ''}
+        </div>
+        <div class="tl-dot" style="background:${t.color};margin-top:4px;flex-shrink:0"></div>
+        <div class="tl-event">${t.event}</div>
+      </div>`).join('');
+}
+
+function renderChecklist() {
+  document.getElementById('checklist-container').innerHTML =
+    CHECKLIST.map((item, i) => {
+      const checked = checkedItems[i];
+      return `<div class="check-item" onclick="toggleCheck(${i})">
+        <div class="check-box ${checked?'checked':''}">${checked?'✓':''}</div>
+        <span class="check-text ${checked?'done':''}">${item}</span>
+      </div>`;
+    }).join('');
+}
+
+function toggleCheck(i) {
+  checkedItems[i] = !checkedItems[i];
+  localStorage.setItem('checkedItems', JSON.stringify(checkedItems));
+  renderChecklist();
+}
+
+// ── MODAL ────────────────────────────────────────────────────────────────────
+
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'Add New Goal';
+  clearForm();
+  addFundRow();
+  openModal();
+}
+
+function openEditModal(id) {
+  editingId = id;
+  const g = goals.find(x => x.id === id);
+  if (!g) return;
+  document.getElementById('modal-title').textContent = 'Edit Goal';
+  document.getElementById('f-name').value = g.name || '';
+  document.getElementById('f-category').value = g.category || 'Education';
+  document.getElementById('f-status').value = g.status || 'on-track';
+  document.getElementById('f-target').value = g.target || '';
+  document.getElementById('f-year').value = g.year > 0 ? g.year : '';
+  document.getElementById('f-emoji').value = g.emoji || '';
+  document.getElementById('f-current').value = g.current || '';
+  document.getElementById('f-note').value = g.note || '';
+  document.getElementById('funds-editor').innerHTML = '';
+  (g.funds || []).forEach(f => addFundRow(f.name, f.amount));
+  openModal();
+}
+
+function openModal() {
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModalOnOverlay(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+function clearForm() {
+  ['f-name','f-target','f-year','f-emoji','f-current','f-note'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-category').value = 'Education';
+  document.getElementById('f-status').value = 'on-track';
+  document.getElementById('funds-editor').innerHTML = '';
+}
+
+function addFundRow(name = '', amount = '') {
+  const editor = document.getElementById('funds-editor');
+  const row = document.createElement('div');
+  row.className = 'fund-edit-row';
+  row.innerHTML = `
+    <input class="form-input" placeholder="Fund name" value="${name}" />
+    <input class="form-input amt" placeholder="₹0,000" value="${amount}" />
+    <button class="btn-remove-fund" onclick="this.parentElement.remove()">−</button>`;
+  editor.appendChild(row);
+}
+
+async function saveGoal() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { showToast('Please enter a goal name', true); return; }
+
+  const funds = [...document.querySelectorAll('#funds-editor .fund-edit-row')].map(row => {
+    const inputs = row.querySelectorAll('input');
+    return { name: inputs[0].value.trim(), amount: inputs[1].value.trim() };
+  }).filter(f => f.name);
+
+  const payload = {
+    name,
+    category: document.getElementById('f-category').value,
+    status: document.getElementById('f-status').value,
+    emoji: document.getElementById('f-emoji').value || '📌',
+    target: document.getElementById('f-target').value.trim(),
+    targetYear: parseInt(document.getElementById('f-year').value) || null,
+    current: document.getElementById('f-current').value.trim(),
+    note: document.getElementById('f-note').value.trim(),
+    funds
+  };
+
+  try {
+    if (editingId) {
+      const updated = await apiUpdateGoal(editingId, payload);
+      updated.year = updated.targetYear || 0;
+      const idx = goals.findIndex(g => g.id === editingId);
+      if (idx !== -1) goals[idx] = updated;
+      showToast('Goal updated ✓');
+    } else {
+      const created = await apiCreateGoal(payload);
+      created.year = created.targetYear || 0;
+      goals.push(created);
+      showToast('Goal added ✓');
+    }
+    renderGoals();
+    closeModal();
+    updateStatus('Synced just now');
+  } catch (e) {
+    showToast('Failed to save. Please try again.', true);
+  }
+}
+
+async function deleteGoal(id) {
+  if (!confirm('Delete this goal?')) return;
+  try {
+    await apiDeleteGoal(id);
+    goals = goals.filter(g => g.id !== id);
+    renderGoals();
+    showToast('Goal deleted');
+    updateStatus('Synced just now');
+  } catch (e) {
+    showToast('Failed to delete. Please try again.', true);
+  }
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+
+function updateStatus(msg) {
+  document.getElementById('last-updated').textContent = msg;
+}
+
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${isError ? 'error' : ''} show`;
+  setTimeout(() => t.className = 'toast', 2500);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderTimeline();
+renderChecklist();
+fetchGoals();
+</script>
+</body>
+</html>
