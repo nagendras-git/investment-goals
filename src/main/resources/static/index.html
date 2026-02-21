@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Investment Goals</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg: #F2F2F7; --card: #FFFEF5; --card2: #FFFFFF;
+    --text-primary: #1C1C1E; --text-secondary: #8E8E93; --text-tertiary: #636366;
+    --divider: #E5E5EA;
+    --blue: #007AFF; --green: #34C759; --orange: #FF9500; --red: #FF3B30; --purple: #AF52DE;
+    --font: -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    --tab-h: 83px;
+  }
+  html, body { height: 100%; overflow: hidden; }
+  body { font-family: var(--font); background: var(--bg); display: flex; flex-direction: column; }
+
+  /* NAV */
+  .nav { background: rgba(242,242,247,0.95); backdrop-filter: blur(20px);
+    padding: 52px 20px 12px; border-bottom: 1px solid rgba(0,0,0,0.08); flex-shrink: 0; z-index: 50; }
+  .nav-inner { max-width: 480px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+  .nav-title { font-size: 26px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; }
+  .nav-sub { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+  .nav-btn { background: var(--blue); color: white; border: none; border-radius: 20px;
+    padding: 8px 16px; font-size: 14px; font-weight: 600; font-family: var(--font);
+    cursor: pointer; display: none; }
+  .nav-btn.show { display: block; }
+  .nav-btn:active { opacity: 0.8; }
+
+  /* PAGES */
+  .pages { flex: 1; overflow: hidden; position: relative; }
+  .page { position: absolute; inset: 0; overflow-y: auto; padding: 16px 16px calc(var(--tab-h) + 16px);
+    display: none; -webkit-overflow-scrolling: touch; }
+  .page.active { display: block; }
+  .inner { max-width: 480px; margin: 0 auto; }
+
+  /* TAB BAR */
+  .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: var(--tab-h);
+    background: rgba(248,248,248,0.96); backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0,0,0,0.1); display: flex; align-items: flex-start;
+    padding-top: 10px; z-index: 100; }
+  .tab { flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 3px; cursor: pointer; padding: 4px 0; transition: transform 0.1s; }
+  .tab:active { transform: scale(0.9); }
+  .tab-icon { font-size: 22px; filter: grayscale(1) opacity(0.35); transition: all 0.2s; }
+  .tab-lbl { font-size: 10px; font-weight: 500; color: var(--text-secondary); transition: color 0.2s; }
+  .tab.active .tab-icon { filter: none; transform: scale(1.08); }
+  .tab.active .tab-lbl { color: var(--blue); font-weight: 700; }
+
+  /* SHARED CARD */
+  .card { background: var(--card2); border-radius: 16px; margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07); overflow: hidden; }
+  .card-y { background: var(--card); }
+  .card-pad { padding: 14px 16px; }
+  .section-hdr { font-size: 12px; font-weight: 700; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 2px 8px; }
+  .divider { height: 1px; background: var(--divider); margin: 10px 16px; }
+  .row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
+  .lbl { font-size: 13.5px; color: var(--text-secondary); }
+  .val { font-size: 13.5px; color: var(--text-primary); font-weight: 500; text-align: right; }
+  .val.o { color: var(--orange); font-weight: 700; }
+  .val.g { color: var(--green); font-weight: 700; }
+  .val.b { color: var(--blue); font-weight: 700; }
+  .val.r { color: var(--red); font-weight: 700; }
+  .sub-lbl { font-size: 10.5px; font-weight: 600; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 0.07em; margin: 10px 0 5px; }
+  .fund-row { display: flex; justify-content: space-between; padding: 3px 0; }
+  .fn { font-size: 13px; color: #3A3A3C; }
+  .fa { font-size: 13px; color: var(--text-primary); font-weight: 600; }
+  .note-box { margin-top: 10px; padding: 9px 11px; background: var(--bg);
+    border-radius: 9px; font-size: 12px; color: var(--text-tertiary); line-height: 1.5; }
+  .pill { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 10.5px; font-weight: 600; }
+  .pg { background:#D1F4DC; color:#1A7F37; } .po { background:#FFF0D9; color:#B25000; }
+  .pb { background:#D6EAFF; color:#0055B3; } .pr { background:#FFD9D9; color:#B30000; }
+  .pp { background:#F0E0FF; color:#7B2FBE; }
+  .btn-ic { background: var(--bg); border: none; border-radius: 8px; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; }
+  .btn-ic:active { opacity: 0.6; }
+
+  /* PORTFOLIO HERO */
+  .hero { background: linear-gradient(140deg,#1C1C1E 0%,#2C2C2E 100%);
+    border-radius: 20px; padding: 22px; margin-bottom: 12px; position: relative; overflow: hidden; }
+  .hero::before { content:''; position:absolute; top:-50px; right:-50px;
+    width:180px; height:180px; background:rgba(0,122,255,0.12); border-radius:50%; }
+  .hero::after { content:''; position:absolute; bottom:-30px; left:-20px;
+    width:110px; height:110px; background:rgba(52,199,89,0.08); border-radius:50%; }
+  .hero-lbl { font-size:11px; color:rgba(255,255,255,0.45); font-weight:500; margin-bottom:4px; }
+  .hero-amt { font-size:36px; font-weight:800; color:white; letter-spacing:-1px; }
+  .hero-sub { font-size:11px; color:rgba(255,255,255,0.35); margin-top:2px; }
+  .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px; position:relative; z-index:1; }
+  .hero-stat { background:rgba(255,255,255,0.07); border-radius:12px; padding:11px; }
+  .hs-lbl { font-size:10px; color:rgba(255,255,255,0.4); margin-bottom:3px; }
+  .hs-val { font-size:17px; font-weight:700; color:white; }
+  .hero-edit { position:absolute; top:14px; right:14px; background:rgba(255,255,255,0.1);
+    border:none; border-radius:10px; padding:6px 12px; color:rgba(255,255,255,0.65);
+    font-size:12px; font-weight:600; font-family:var(--font); cursor:pointer; z-index:2; }
+
+  /* STAT TILES */
+  .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+  .stat-tile { background:var(--card2); border-radius:14px; padding:14px;
+    box-shadow:0 1px 4px rgba(0,0,0,0.07); }
+  .st-icon { font-size:22px; margin-bottom:7px; }
+  .st-lbl { font-size:11px; color:var(--text-secondary); font-weight:500; margin-bottom:2px; }
+  .st-val { font-size:20px; font-weight:800; color:var(--text-primary); letter-spacing:-0.3px; }
+  .st-sub { font-size:10px; color:var(--text-secondary); margin-top:2px; }
+
+  /* GOAL CARD */
+  .goal-card { background:var(--card); border-radius:14px; margin-bottom:10px;
+    box-shadow:0 1px 3px rgba(0,0,0,0.07); overflow:hidden; }
+
+  /* FUNDS PAGE */
+  .fund-bar-wrap { margin: 4px 0; }
+  .fund-bar { height:8px; border-radius:4px; overflow:hidden; background:var(--divider); display:flex; }
+  .bar-seg { height:100%; }
+  .legend { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .leg-item { display:flex; align-items:center; gap:5px; font-size:11.5px; }
+  .leg-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+  /* TIMELINE */
+  .tl-item { display:flex; gap:12px; padding:4px 0; }
+  .tl-left { display:flex; flex-direction:column; align-items:center; width:46px; flex-shrink:0; }
+  .tl-yr { font-size:10.5px; font-weight:700; color:var(--text-secondary); text-align:center; }
+  .tl-line { width:1px; flex:1; background:var(--divider); margin-top:4px; min-height:12px; }
+  .tl-dot { width:10px; height:10px; border-radius:50%; margin-top:5px; flex-shrink:0;
+    border:2px solid white; box-shadow:0 0 0 1px rgba(0,0,0,0.1); }
+  .tl-ev { font-size:13px; color:var(--text-primary); line-height:1.5; padding-bottom:10px; flex:1; }
+
+  /* CHECKLIST */
+  .chk { display:flex; align-items:center; gap:12px; padding:7px 0; cursor:pointer; }
+  .chk-box { width:24px; height:24px; border-radius:50%; border:2px solid var(--divider);
+    flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+  .chk-box.on { background:var(--green); border-color:var(--green); color:white; font-size:13px; }
+  .chk-txt { font-size:14px; color:var(--text-primary); flex:1; line-height:1.4; }
+  .chk-txt.done { text-decoration:line-through; color:var(--text-secondary); }
+
+  /* MODAL */
+  .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:200;
+    display:none; align-items:flex-end; justify-content:center; }
+  .overlay.open { display:flex; }
+  .modal { background:var(--card2); border-radius:24px 24px 0 0; padding:12px 20px 48px;
+    width:100%; max-width:480px; max-height:92vh; overflow-y:auto;
+    animation:up 0.3s cubic-bezier(0.32,0.72,0,1); }
+  @keyframes up { from{transform:translateY(100%)} to{transform:translateY(0)} }
+  .m-handle { width:36px; height:4px; background:var(--divider); border-radius:2px; margin:0 auto 16px; }
+  .m-title { font-size:20px; font-weight:800; color:var(--text-primary); margin-bottom:18px; letter-spacing:-0.3px; }
+  .fg { margin-bottom:14px; }
+  .fl { font-size:11.5px; font-weight:600; color:var(--text-secondary); text-transform:uppercase;
+    letter-spacing:0.06em; margin-bottom:6px; display:block; }
+  .fi, .fs, .ft { width:100%; background:var(--bg); border:1.5px solid transparent;
+    border-radius:11px; padding:12px 13px; font-size:15px; font-family:var(--font);
+    color:var(--text-primary); outline:none; transition:border-color 0.2s; }
+  .fi:focus,.fs:focus,.ft:focus { border-color:var(--blue); }
+  .ft { resize:vertical; min-height:70px; }
+  .f2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .fer { display:flex; gap:8px; margin-bottom:8px; align-items:center; }
+  .fer .fi { flex:1; } .fer .fi.amt { flex:0 0 95px; }
+  .btn-rf { background:#FFD9D9; border:none; border-radius:8px; width:34px; height:42px;
+    color:var(--red); font-size:18px; cursor:pointer; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; }
+  .btn-af { background:var(--bg); border:1.5px dashed var(--divider); border-radius:11px;
+    padding:10px; width:100%; font-size:13px; color:var(--blue); font-weight:600;
+    font-family:var(--font); cursor:pointer; margin-top:4px; }
+  .m-actions { display:flex; gap:10px; margin-top:22px; }
+  .btn-cancel { flex:1; background:var(--bg); border:none; border-radius:13px; padding:15px;
+    font-size:15px; font-weight:600; color:var(--text-primary); font-family:var(--font); cursor:pointer; }
+  .btn-save { flex:2; background:var(--blue); border:none; border-radius:13px; padding:15px;
+    font-size:15px; font-weight:700; color:white; font-family:var(--font); cursor:pointer; }
+  .btn-save:active { opacity:0.85; }
+
+  /* MISC */
+  .spinner { width:28px; height:28px; border:3px solid var(--divider); border-top-color:var(--blue);
+    border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 12px; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .loading { text-align:center; padding:50px 20px; color:var(--text-secondary); }
+  .empty { text-align:center; padding:40px 20px; color:var(--text-secondary); font-size:14px; line-height:1.6; }
+  .toast { position:fixed; bottom:calc(var(--tab-h) + 10px); left:50%;
+    transform:translateX(-50%) translateY(16px); background:#1C1C1E; color:white;
+    padding:10px 22px; border-radius:22px; font-size:13.5px; font-weight:500;
+    opacity:0; transition:all 0.28s; z-index:300; white-space:nowrap; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.err { background:var(--red); }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-inner">
+    <div>
+      <div class="nav-title" id="nav-title">Overview</div>
+      <div class="nav-sub" id="nav-sub">Portfolio Snapshot</div>
+    </div>
+    <button class="nav-btn" id="nav-btn" onclick="openAddModal()">＋ Add Goal</button>
+  </div>
+</div>
+
+<div class="pages">
+
+  <!-- PAGE 1: OVERVIEW -->
+  <div class="page active" id="page-portfolio">
+    <div class="inner">
+      <div class="hero">
+        <button class="hero-edit" onclick="openPortfolioEdit()">✏️ Edit</button>
+        <div class="hero-lbl">Total Portfolio Value</div>
+        <div class="hero-amt" id="h-amount">₹26L</div>
+        <div class="hero-sub">Updated <span id="h-date"></span></div>
+        <div class="hero-grid">
+          <div class="hero-stat"><div class="hs-lbl">Monthly SIP</div><div class="hs-val" id="h-sip">₹80,000</div></div>
+          <div class="hero-stat"><div class="hs-lbl">FIRE Target</div><div class="hs-val" id="h-fire">Age 42</div></div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-tile"><div class="st-icon">🎯</div><div class="st-lbl">Active Goals</div><div class="st-val" id="t-goals">—</div><div class="st-sub">Being tracked</div></div>
+        <div class="stat-tile"><div class="st-icon">📅</div><div class="st-lbl">Years to FIRE</div><div class="st-val" id="t-years">—</div><div class="st-sub">Approx timeline</div></div>
+        <div class="stat-tile"><div class="st-icon">🔥</div><div class="st-lbl">FIRE Corpus</div><div class="st-val">₹2.5Cr</div><div class="st-sub">Target</div></div>
+        <div class="stat-tile"><div class="st-icon">👦</div><div class="st-lbl">Son's Age</div><div class="st-val">3 yrs</div><div class="st-sub">Born Oct 2022</div></div>
+      </div>
+
+      <div class="section-hdr">📋 Key Numbers</div>
+      <div class="card">
+        <div class="card-pad">
+          <div class="row"><span class="lbl">Personal Loan EMI</span><span class="val r">₹53,433 / mo</span></div>
+          <div class="row"><span class="lbl">Loan Closes</span><span class="val g">2027–28 🎉</span></div>
+          <div class="row"><span class="lbl">Post-Loan Monthly SIP</span><span class="val b">₹1.33L / mo</span></div>
+          <div class="row"><span class="lbl">₹26L corpus in 18 yrs @12%</span><span class="val g">~₹1.8 Cr ✅</span></div>
+          <div class="row"><span class="lbl">Higher Ed goal funded by</span><span class="val">Existing corpus alone</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 2: GOALS -->
+  <div class="page" id="page-goals">
+    <div class="inner" id="goals-container">
+      <div class="loading"><div class="spinner"></div>Loading goals...</div>
+    </div>
+  </div>
+
+  <!-- PAGE 3: FUNDS -->
+  <div class="page" id="page-funds">
+    <div class="inner">
+      <div class="section-hdr">💰 Monthly SIP Allocation</div>
+      <div class="card"><div class="card-pad" id="sip-list"></div></div>
+
+      <div class="section-hdr">📊 Visual Breakdown</div>
+      <div class="card">
+        <div class="card-pad">
+          <div class="fund-bar-wrap">
+            <div class="fund-bar" id="alloc-bar"></div>
+            <div class="legend" id="alloc-legend"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-hdr">🗂 Goal × Fund Mapping</div>
+      <div id="goal-fund-map"></div>
+    </div>
+  </div>
+
+  <!-- PAGE 4: TIMELINE -->
+  <div class="page" id="page-timeline">
+    <div class="inner">
+      <div class="section-hdr">🗓 Year-by-Year Roadmap</div>
+      <div class="card"><div class="card-pad" id="tl-container"></div></div>
+    </div>
+  </div>
+
+  <!-- PAGE 5: CHECKLIST -->
+  <div class="page" id="page-checklist">
+    <div class="inner">
+      <div class="section-hdr">✅ Annual Review Checklist</div>
+      <div class="card"><div class="card-pad" id="chk-container"></div></div>
+
+      <div class="section-hdr">📌 Key Reminders</div>
+      <div class="card">
+        <div class="card-pad">
+          <div class="row"><span class="lbl">Step-up SIP annually</span><span class="val b">+10% / year</span></div>
+          <div class="row"><span class="lbl">Rebalance trigger</span><span class="val o">Equity > 75%</span></div>
+          <div class="row"><span class="lbl">Restart Goldbees</span><span class="val r">Paused ⚠️</span></div>
+          <div class="row"><span class="lbl">3 yrs before goal</span><span class="val g">Shift corpus → BAF</span></div>
+          <div class="row"><span class="lbl">Next review</span><span class="val">Feb 2027</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM TABS -->
+<div class="tab-bar">
+  <div class="tab active" id="tab-portfolio" onclick="switchTab('portfolio')">
+    <div class="tab-icon">📊</div><div class="tab-lbl">Overview</div>
+  </div>
+  <div class="tab" id="tab-goals" onclick="switchTab('goals')">
+    <div class="tab-icon">🎯</div><div class="tab-lbl">Goals</div>
+  </div>
+  <div class="tab" id="tab-funds" onclick="switchTab('funds')">
+    <div class="tab-icon">💰</div><div class="tab-lbl">Funds</div>
+  </div>
+  <div class="tab" id="tab-timeline" onclick="switchTab('timeline')">
+    <div class="tab-icon">🗓</div><div class="tab-lbl">Roadmap</div>
+  </div>
+  <div class="tab" id="tab-checklist" onclick="switchTab('checklist')">
+    <div class="tab-icon">✅</div><div class="tab-lbl">Checklist</div>
+  </div>
+</div>
+
+<!-- GOAL MODAL -->
+<div class="overlay" id="m-goal" onclick="closeOverlay(event,'m-goal')">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div class="m-title" id="m-goal-title">Add Goal</div>
+    <div class="fg"><label class="fl">Goal Name</label><input class="fi" id="f-name" placeholder="e.g. Son's Graduation"/></div>
+    <div class="f2">
+      <div class="fg"><label class="fl">Category</label>
+        <select class="fs" id="f-cat"><option>Education</option><option>FIRE / Retirement</option><option>Housing</option><option>Vacation</option><option>Gold / Hedge</option><option>Other</option></select></div>
+      <div class="fg"><label class="fl">Status</label>
+        <select class="fs" id="f-status"><option value="on-track">On Track</option><option value="in-progress">In Progress</option><option value="auto-funded">Auto-Funded</option><option value="not-started">Not Started</option><option value="complete">Complete</option></select></div>
+    </div>
+    <div class="f2">
+      <div class="fg"><label class="fl">Target Amount</label><input class="fi" id="f-target" placeholder="₹1.3 Crore"/></div>
+      <div class="fg"><label class="fl">Target Year</label><input class="fi" id="f-year" placeholder="2040" type="number"/></div>
+    </div>
+    <div class="f2">
+      <div class="fg"><label class="fl">Emoji</label><input class="fi" id="f-emoji" placeholder="🎓" maxlength="2"/></div>
+      <div class="fg"><label class="fl">Status Note</label><input class="fi" id="f-cur" placeholder="Corpus building"/></div>
+    </div>
+    <div class="fg">
+      <label class="fl">Tagged Funds & SIP Amount</label>
+      <div id="f-editor"></div>
+      <button class="btn-af" onclick="addFundRow()">＋ Add Fund</button>
+    </div>
+    <div class="fg"><label class="fl">Exit Strategy / Notes</label><textarea class="ft" id="f-note" placeholder="e.g. 2037 → Move to HDFC BAF → SWP from 2040"></textarea></div>
+    <div class="m-actions">
+      <button class="btn-cancel" onclick="closeModal('m-goal')">Cancel</button>
+      <button class="btn-save" onclick="saveGoal()">Save Goal</button>
+    </div>
+  </div>
+</div>
+
+<!-- PORTFOLIO MODAL -->
+<div class="overlay" id="m-portfolio" onclick="closeOverlay(event,'m-portfolio')">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div class="m-title">Edit Portfolio Snapshot</div>
+    <div class="fg"><label class="fl">Current Portfolio Value</label><input class="fi" id="p-val" placeholder="e.g. ₹26L"/></div>
+    <div class="fg"><label class="fl">Monthly SIP Amount</label><input class="fi" id="p-sip" placeholder="e.g. ₹80,000"/></div>
+    <div class="f2">
+      <div class="fg"><label class="fl">Current Age</label><input class="fi" id="p-age" placeholder="36" type="number"/></div>
+      <div class="fg"><label class="fl">FIRE Target Age</label><input class="fi" id="p-fire" placeholder="42" type="number"/></div>
+    </div>
+    <div class="m-actions">
+      <button class="btn-cancel" onclick="closeModal('m-portfolio')">Cancel</button>
+      <button class="btn-save" onclick="savePortfolio()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api/goals';
+const COLORS = ['#007AFF','#34C759','#FF9500','#FF3B30','#AF52DE','#32ADE6','#FF2D55','#FFCC00'];
+
+let goals = [], editingId = null, activeTab = 'portfolio';
+let checkedItems = JSON.parse(localStorage.getItem('ck') || '{}');
+let pf = JSON.parse(localStorage.getItem('pf') || '{"value":"₹26L","sip":"₹80,000","age":36,"fireAge":42}');
+
+const TABS = {
+  portfolio: { title:'Overview',  sub:'Portfolio Snapshot',        btn:false },
+  goals:     { title:'My Goals',  sub:'Goal-based investments',    btn:true  },
+  funds:     { title:'Funds',     sub:'SIP allocation & mapping',  btn:false },
+  timeline:  { title:'Roadmap',   sub:'Year-by-year plan',         btn:false },
+  checklist: { title:'Checklist', sub:'Annual review',             btn:false }
+};
+
+const TL = [
+  {y:"2026–27", e:"Loan closure phase. SIPs running. Parents contributing ₹5–6L/year toward loan.", c:"#FF3B30"},
+  {y:"2028",    e:"Personal loan closed 🎉 House fund starts (₹25k/mo). Total SIP → ₹1.33L/month.", c:"#FF9500"},
+  {y:"2031",    e:"Move Intermediate education corpus → HDFC BAF.", c:"#FF9500"},
+  {y:"2032–33", e:"House purchase. ₹25–30L down payment ready. FIRE evaluation begins.", c:"#007AFF"},
+  {y:"2033–34", e:"FIRE 🔥 Work stops. SWP ₹60–70k/month from HDFC BAF.", c:"#34C759"},
+  {y:"2037",    e:"Move Graduation corpus → HDFC BAF. SWP for college fees.", c:"#34C759"},
+  {y:"2038",    e:"Son's Intermediate 🎓 BAF SWP covers ₹16L.", c:"#34C759"},
+  {y:"2040",    e:"Son's Graduation 🎓 BAF SWP covers ₹1.3Cr.", c:"#34C759"},
+  {y:"2041",    e:"Move Higher Education corpus → HDFC BAF.", c:"#34C759"},
+  {y:"2044",    e:"Son's Higher Education 🎓 BAF SWP covers ₹1.8Cr.", c:"#34C759"}
+];
+
+const CL = [
+  "Increase SIP by 10% every year 📈",
+  "Rebalance if equity > 75% of portfolio ⚖️",
+  "Check loan outstanding — parents' contribution 🏦",
+  "Restart Goldbees SIP — currently paused 🥇",
+  "Track each goal corpus vs target 🎯",
+  "Don't panic sell during market corrections 🧘",
+  "Review & update FIRE corpus target 🔥",
+  "Update portfolio value in Overview tab 📊"
+];
+
+// ── TAB SWITCH ───────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  document.getElementById(`page-${tab}`).classList.add('active');
+  const cfg = TABS[tab];
+  document.getElementById('nav-title').textContent = cfg.title;
+  document.getElementById('nav-sub').textContent = cfg.sub;
+  document.getElementById('nav-btn').classList.toggle('show', cfg.btn);
+  activeTab = tab;
+  if (tab === 'funds') renderFunds();
+}
+
+// ── PORTFOLIO ─────────────────────────────────────────────────
+function renderPortfolio() {
+  document.getElementById('h-amount').textContent = pf.value;
+  document.getElementById('h-sip').textContent = pf.sip;
+  document.getElementById('h-fire').textContent = `Age ${pf.fireAge}`;
+  document.getElementById('h-date').textContent = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+  document.getElementById('t-years').textContent = `${Math.max(0,pf.fireAge-pf.age)} yrs`;
+  document.getElementById('t-goals').textContent = goals.length || '—';
+}
+
+function openPortfolioEdit() {
+  document.getElementById('p-val').value = pf.value;
+  document.getElementById('p-sip').value = pf.sip;
+  document.getElementById('p-age').value = pf.age;
+  document.getElementById('p-fire').value = pf.fireAge;
+  openModal('m-portfolio');
+}
+
+function savePortfolio() {
+  pf = {
+    value:   document.getElementById('p-val').value.trim() || pf.value,
+    sip:     document.getElementById('p-sip').value.trim() || pf.sip,
+    age:     parseInt(document.getElementById('p-age').value) || pf.age,
+    fireAge: parseInt(document.getElementById('p-fire').value) || pf.fireAge
+  };
+  localStorage.setItem('pf', JSON.stringify(pf));
+  renderPortfolio();
+  closeModal('m-portfolio');
+  toast('Portfolio updated ✓');
+}
+
+// ── API ───────────────────────────────────────────────────────
+async function fetchGoals() {
+  try {
+    const r = await fetch(API);
+    if (!r.ok) throw 0;
+    goals = (await r.json()).map(g => ({...g, year: g.targetYear||0}));
+    renderGoals();
+    renderPortfolio();
+  } catch {
+    document.getElementById('goals-container').innerHTML =
+      `<div class="empty">⚠️ Cannot connect to server.<br>Make sure Spring Boot is running.</div>`;
+  }
+}
+
+async function api(url, method, body) {
+  const r = await fetch(url,{method,headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
+  if (!r.ok) throw new Error(await r.text());
+  return method==='DELETE'?null:r.json();
+}
+
+// ── GOALS ─────────────────────────────────────────────────────
+const SC = {
+  'on-track':{l:'On Track',c:'pg'}, 'in-progress':{l:'In Progress',c:'po'},
+  'auto-funded':{l:'Auto-Funded',c:'pb'}, 'not-started':{l:'Not Started',c:'pr'},
+  'complete':{l:'Complete ✓',c:'pp'}
+};
+const CE = {'Education':'🎓','FIRE / Retirement':'🔥','Housing':'🏠','Vacation':'✈️','Gold / Hedge':'🥇'};
+
+function renderGoals() {
+  const c = document.getElementById('goals-container');
+  renderPortfolio();
+  if (!goals.length) { c.innerHTML=`<div class="empty">No goals yet.<br>Tap <b>＋ Add Goal</b> to start.</div>`; return; }
+  const grp = {};
+  goals.forEach(g => { (grp[g.category]=grp[g.category]||[]).push(g); });
+  c.innerHTML = Object.entries(grp).map(([cat,items]) =>
+    `<div class="section-hdr">${CE[cat]||'📌'} ${cat}</div>` + items.map(goalHTML).join('')
+  ).join('');
+}
+
+function goalHTML(g) {
+  const sc = SC[g.status]||{l:g.status,c:'po'};
+  const funds = g.funds?.length ? `<div class="sub-lbl">Tagged Funds</div>${g.funds.map(f=>`<div class="fund-row"><span class="fn">${f.name}</span><span class="fa">${f.amount||''}</span></div>`).join('')}` : '';
+  return `<div class="goal-card">
+    <div style="padding:14px 16px 0;display:flex;justify-content:space-between;align-items:flex-start">
+      <div style="flex:1">
+        <div style="font-size:11px;color:var(--text-secondary);font-weight:500;margin-bottom:2px">${g.category}</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          ${g.emoji||'📌'} ${g.name} <span class="pill ${sc.c}">${sc.l}</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-left:8px;margin-top:2px">
+        <button class="btn-ic" onclick="editGoal(${g.id})">✏️</button>
+        <button class="btn-ic" style="color:var(--red)" onclick="delGoal(${g.id})">🗑</button>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div style="padding:0 16px 14px">
+      ${g.target?`<div class="row"><span class="lbl">Target</span><span class="val o">${g.target}</span></div>`:''}
+      ${g.year?`<div class="row"><span class="lbl">Target Year</span><span class="val">${g.year}</span></div>`:''}
+      ${g.current?`<div class="row"><span class="lbl">Status</span><span class="val" style="font-size:12px;color:var(--text-tertiary);max-width:58%">${g.current}</span></div>`:''}
+      ${funds}
+      ${g.note?`<div class="note-box">${g.note.replace(/\n/g,'<br>')}</div>`:''}
+    </div>
+  </div>`;
+}
+
+// ── FUNDS ─────────────────────────────────────────────────────
+function renderFunds() {
+  const fm = {};
+  goals.forEach(g => (g.funds||[]).forEach(f => {
+    if (!f.name) return;
+    if (!fm[f.name]) fm[f.name] = {amount:f.amount, goals:[]};
+    fm[f.name].goals.push(g.name);
+  }));
+  const funds = Object.entries(fm);
+
+  document.getElementById('sip-list').innerHTML = funds.length
+    ? funds.map(([n,d],i) => `
+      <div class="row">
+        <span style="display:flex;align-items:center;gap:8px">
+          <span style="width:10px;height:10px;border-radius:50%;background:${COLORS[i%COLORS.length]};display:inline-block;flex-shrink:0"></span>
+          <span style="font-size:13.5px;color:var(--text-primary)">${n}</span>
+        </span>
+        <span class="val b">${d.amount||'—'}</span>
+      </div>`).join('')
+    : `<div style="color:var(--text-secondary);font-size:13px">No funds tagged yet.</div>`;
+
+  const w = funds.length ? Math.floor(100/funds.length) : 100;
+  document.getElementById('alloc-bar').innerHTML = funds.length
+    ? funds.map(([n,d],i) => `<div class="bar-seg" style="width:${w}%;background:${COLORS[i%COLORS.length]}"></div>`).join('')
+    : `<div class="bar-seg" style="width:100%;background:var(--divider)"></div>`;
+
+  document.getElementById('alloc-legend').innerHTML = funds.map(([n,d],i) =>
+    `<div class="leg-item"><span class="leg-dot" style="background:${COLORS[i%COLORS.length]}"></span>${n.split(' ').slice(0,2).join(' ')}</div>`
+  ).join('');
+
+  document.getElementById('goal-fund-map').innerHTML = goals.filter(g=>g.funds?.length).map(g => `
+    <div class="card card-y" style="margin-bottom:10px">
+      <div style="padding:12px 16px 4px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary)">${g.emoji||'📌'} ${g.name}</div>
+        <span class="pill ${SC[g.status]?.c||'po'}">${SC[g.status]?.l||g.status}</span>
+      </div>
+      <div style="padding:0 16px 12px">
+        ${g.funds.map(f=>`<div class="fund-row"><span class="fn">→ ${f.name}</span><span class="fa">${f.amount||''}</span></div>`).join('')}
+      </div>
+    </div>`).join('') || `<div class="empty">No fund mappings yet.</div>`;
+}
+
+// ── TIMELINE ──────────────────────────────────────────────────
+function renderTimeline() {
+  document.getElementById('tl-container').innerHTML = TL.map((t,i) => `
+    <div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-yr">${t.y}</div>
+        ${i<TL.length-1?'<div class="tl-line"></div>':''}
+      </div>
+      <div class="tl-dot" style="background:${t.c}"></div>
+      <div class="tl-ev">${t.e}</div>
+    </div>`).join('');
+}
+
+// ── CHECKLIST ─────────────────────────────────────────────────
+function renderChecklist() {
+  document.getElementById('chk-container').innerHTML = CL.map((item,i) => {
+    const on = checkedItems[i];
+    return `<div class="chk" onclick="toggleChk(${i})">
+      <div class="chk-box ${on?'on':''}">${on?'✓':''}</div>
+      <span class="chk-txt ${on?'done':''}">${item}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleChk(i) {
+  checkedItems[i] = !checkedItems[i];
+  localStorage.setItem('ck', JSON.stringify(checkedItems));
+  renderChecklist();
+}
+
+// ── MODALS ────────────────────────────────────────────────────
+function openAddModal() { editingId=null; document.getElementById('m-goal-title').textContent='Add New Goal'; clearForm(); addFundRow(); openModal('m-goal'); }
+
+function editGoal(id) {
+  editingId = id;
+  const g = goals.find(x=>x.id===id); if (!g) return;
+  document.getElementById('m-goal-title').textContent = 'Edit Goal';
+  document.getElementById('f-name').value = g.name||'';
+  document.getElementById('f-cat').value = g.category||'Education';
+  document.getElementById('f-status').value = g.status||'on-track';
+  document.getElementById('f-target').value = g.target||'';
+  document.getElementById('f-year').value = g.year>0?g.year:'';
+  document.getElementById('f-emoji').value = g.emoji||'';
+  document.getElementById('f-cur').value = g.current||'';
+  document.getElementById('f-note').value = g.note||'';
+  document.getElementById('f-editor').innerHTML = '';
+  (g.funds||[]).forEach(f=>addFundRow(f.name,f.amount));
+  openModal('m-goal');
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function closeOverlay(e,id) { if(e.target===document.getElementById(id)) closeModal(id); }
+
+function clearForm() {
+  ['f-name','f-target','f-year','f-emoji','f-cur','f-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-cat').value='Education';
+  document.getElementById('f-status').value='on-track';
+  document.getElementById('f-editor').innerHTML='';
+}
+
+function addFundRow(name='',amount='') {
+  const e=document.getElementById('f-editor'), r=document.createElement('div');
+  r.className='fer';
+  r.innerHTML=`<input class="fi" placeholder="Fund name" value="${name}"/><input class="fi amt" placeholder="₹0,000" value="${amount}"/><button class="btn-rf" onclick="this.parentElement.remove()">−</button>`;
+  e.appendChild(r);
+}
+
+async function saveGoal() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { toast('Please enter a goal name',true); return; }
+  const funds = [...document.querySelectorAll('#f-editor .fer')].map(r=>{
+    const i=r.querySelectorAll('input'); return {name:i[0].value.trim(),amount:i[1].value.trim()};
+  }).filter(f=>f.name);
+  const payload = {
+    name, category:document.getElementById('f-cat').value,
+    status:document.getElementById('f-status').value,
+    emoji:document.getElementById('f-emoji').value||'📌',
+    target:document.getElementById('f-target').value.trim(),
+    targetYear:parseInt(document.getElementById('f-year').value)||null,
+    current:document.getElementById('f-cur').value.trim(),
+    note:document.getElementById('f-note').value.trim(), funds
+  };
+  try {
+    if (editingId) {
+      const u = await api(`${API}/${editingId}`,'PUT',payload);
+      u.year=u.targetYear||0;
+      const idx=goals.findIndex(g=>g.id===editingId); if(idx!==-1) goals[idx]=u;
+      toast('Goal updated ✓');
+    } else {
+      const c=await api(API,'POST',payload); c.year=c.targetYear||0; goals.push(c);
+      toast('Goal added ✓');
+    }
+    renderGoals(); closeModal('m-goal');
+  } catch { toast('Failed to save.',true); }
+}
+
+async function delGoal(id) {
+  if (!confirm('Delete this goal?')) return;
+  try { await api(`${API}/${id}`,'DELETE'); goals=goals.filter(g=>g.id!==id); renderGoals(); toast('Deleted'); }
+  catch { toast('Failed to delete.',true); }
+}
+
+function toast(msg, isErr=false) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`toast ${isErr?'err':''} show`;
+  setTimeout(()=>t.className='toast',2500);
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+renderPortfolio();
+renderTimeline();
+renderChecklist();
+fetchGoals();
+</script>
+</body>
+</html>
