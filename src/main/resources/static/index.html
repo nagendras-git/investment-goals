@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Investment Goals</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --bg: #F2F2F7;
+    --card: #FFFFFF;
+    --text1: #1C1C1E;
+    --text2: #8E8E93;
+    --text3: #636366;
+    --div: #E5E5EA;
+    --blue: #007AFF;
+    --green: #34C759;
+    --orange: #FF9500;
+    --red: #FF3B30;
+    --purple: #AF52DE;
+    --teal: #32ADE6;
+    --indigo: #5856D6;
+    --font: -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    background: #EBEBF0;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* ── NAV ── */
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(235,235,240,0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 52px 20px 12px;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+  }
+  .nav-inner {
+    max-width: 480px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .nav-title { font-size: 22px; font-weight: 800; color: var(--text1); letter-spacing: -0.4px; }
+  .nav-sub   { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .btn-add {
+    background: var(--blue); color: white; border: none;
+    border-radius: 20px; padding: 8px 16px;
+    font-size: 14px; font-weight: 600; font-family: var(--font);
+    cursor: pointer;
+  }
+  .btn-add:active { opacity: 0.8; transform: scale(0.97); }
+
+  /* ── MAIN ── */
+  .content { max-width: 480px; margin: 0 auto; padding: 14px 16px 20px; }
+
+  /* ── ACCORDION SECTION ── */
+  .section {
+    background: #F5F6FA;
+    border-radius: 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    overflow: hidden;
+  }
+
+  /* Section accent — colored left strip on the toggle header */
+  .section-toggle {
+    border-left: 4px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .section.open .section-toggle {
+    border-left-color: var(--sec-color, var(--blue));
+  }
+  .sec-portfolio { --sec-color: #007AFF; }
+  .sec-education { --sec-color: #007AFF; }
+  .sec-fire      { --sec-color: #FF3B30; }
+  .sec-housing   { --sec-color: #34C759; }
+  .sec-vacation  { --sec-color: #FF9500; }
+  .sec-gold      { --sec-color: #FFCC00; }
+  .sec-other     { --sec-color: #AF52DE; }
+  .sec-roadmap   { --sec-color: #5856D6; }
+  .sec-checklist { --sec-color: #34C759; }
+
+  .section-toggle {
+    width: 100%; background: #FFFFFF; border: none;
+    padding: 15px 16px; cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font);
+    text-align: left;
+  }
+  .section-toggle:active { background: rgba(0,0,0,0.02); }
+
+  .section-emoji { font-size: 18px; flex-shrink: 0; }
+
+  .section-label {
+    flex: 1;
+    font-size: 15px; font-weight: 700;
+    color: var(--text1); letter-spacing: -0.1px;
+  }
+
+  .section-meta {
+    font-size: 12px; color: var(--text2);
+    font-weight: 600; margin-right: 6px;
+    flex-shrink: 0;
+    transition: color 0.2s;
+  }
+  .section.open .section-meta {
+    color: var(--sec-color, var(--blue));
+  }
+
+  .section-chevron {
+    font-size: 12px; color: var(--text2);
+    transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+    flex-shrink: 0;
+  }
+  .section.open .section-chevron { transform: rotate(180deg); }
+
+  .section-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.32s cubic-bezier(0.4,0,0.2,1);
+  }
+  .section.open .section-body { max-height: 3000px; }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(to right, var(--sec-color, var(--div)), var(--div));
+    margin: 0;
+    opacity: 0.4;
+  }
+
+  /* ── PORTFOLIO SNAPSHOT BODY ── */
+  .snapshot-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; padding: 14px 16px;
+  }
+  .snap-tile {
+    background: #FFFFFF;
+    border-radius: 11px; padding: 12px 13px;
+    border-left: 3px solid var(--tile-color, #007AFF);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+  }
+  .snap-tile-label { font-size: 10.5px; color: var(--text2); font-weight: 500; margin-bottom: 3px; }
+  .snap-tile-value { font-size: 18px; font-weight: 800; color: var(--text1); letter-spacing: -0.3px; }
+  .snap-tile-sub   { font-size: 10px; color: var(--text2); margin-top: 2px; }
+
+  .snap-edit-row {
+    display: flex; align-items: center;
+    padding: 10px 16px 14px; gap: 10px;
+  }
+  .snap-edit-row .snap-edit-btn {
+    background: var(--bg); border: none; border-radius: 9px;
+    padding: 7px 14px; font-size: 13px; font-weight: 600;
+    color: var(--blue); font-family: var(--font); cursor: pointer;
+    flex-shrink: 0;
+  }
+  .snap-edit-row .snap-edit-btn:active { opacity: 0.7; }
+
+  .key-numbers { padding: 6px 16px 14px; }
+  .kn-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 5px 0; border-bottom: 1px solid var(--div);
+  }
+  .kn-row:last-child { border-bottom: none; }
+  .kn-lbl { font-size: 13px; color: var(--text2); }
+  .kn-val { font-size: 13px; color: var(--text1); font-weight: 600; text-align: right; }
+  .kn-val.o { color: var(--orange); }
+  .kn-val.g { color: var(--green); }
+  .kn-val.b { color: var(--blue); }
+  .kn-val.r { color: var(--red); }
+
+  /* ── GOAL CARDS inside sections ── */
+  .goal-card {
+    background: #FFFFFF;
+    margin: 8px 10px;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.09);
+    border-left: 4px solid var(--cat-color, #007AFF);
+    overflow: hidden;
+  }
+  .goal-card:last-child { margin-bottom: 12px; }
+
+  .goal-header {
+    padding: 12px 14px 0;
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .goal-name {
+    font-size: 15px; font-weight: 700; color: var(--text1);
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    line-height: 1.3;
+  }
+  .goal-actions { display: flex; gap: 6px; margin-left: 8px; flex-shrink: 0; }
+  .btn-icon {
+    background: rgba(0,0,0,0.04); border: none; border-radius: 7px;
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 13px;
+  }
+  .btn-icon:active { opacity: 0.6; }
+
+  .goal-divider { height: 1px; background: var(--div); margin: 10px 14px 0; }
+
+  .goal-body { padding: 6px 14px 12px; }
+  .info-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 4px 0;
+  }
+  .info-lbl { font-size: 12.5px; color: var(--text2); flex-shrink: 0; }
+  .info-val { font-size: 12.5px; color: var(--text1); font-weight: 500; text-align: right; max-width: 58%; }
+  .info-val.o { color: var(--orange); font-weight: 700; }
+
+  .funds-label {
+    font-size: 10px; font-weight: 700; color: var(--text2);
+    text-transform: uppercase; letter-spacing: 0.07em;
+    margin: 8px 0 4px;
+  }
+  .fund-row { display: flex; justify-content: space-between; padding: 2px 0; }
+  .fund-name { font-size: 12.5px; color: #3A3A3C; }
+  .fund-amt  { font-size: 12.5px; color: var(--text1); font-weight: 600; }
+
+  .note-box {
+    margin-top: 8px; padding: 8px 10px;
+    background: #EFF3FF;
+    border-left: 3px solid #B0C4FF;
+    border-radius: 0 8px 8px 0;
+    font-size: 11.5px; color: #3A4A6B; line-height: 1.5;
+  }
+
+  /* STATUS PILL */
+  .pill {
+    display: inline-block; padding: 2px 8px;
+    border-radius: 20px; font-size: 10px; font-weight: 600;
+  }
+  .pill-green  { background: #D1F4DC; color: #1A7F37; }
+  .pill-orange { background: #FFF0D9; color: #B25000; }
+  .pill-blue   { background: #D6EAFF; color: #0055B3; }
+  .pill-red    { background: #FFD9D9; color: #B30000; }
+  .pill-purple { background: #F0E0FF; color: #7B2FBE; }
+
+  /* Category accent colors on left border */
+  .cat-education { --cat-color: #007AFF; }
+  .cat-fire      { --cat-color: #FF3B30; }
+  .cat-housing   { --cat-color: #34C759; }
+  .cat-vacation  { --cat-color: #FF9500; }
+  .cat-gold      { --cat-color: #FFCC00; }
+  .cat-other     { --cat-color: #AF52DE; }
+
+  /* ── TIMELINE inside section ── */
+  .tl-wrap { padding: 8px 16px 14px; }
+  .tl-item { display: flex; gap: 10px; padding: 3px 0; }
+  .tl-left { display: flex; flex-direction: column; align-items: center; width: 42px; flex-shrink: 0; }
+  .tl-yr   { font-size: 10.5px; font-weight: 700; color: var(--text2); text-align: center; }
+  .tl-line { width: 1px; flex: 1; background: var(--div); margin-top: 3px; min-height: 10px; }
+  .tl-dot  {
+    width: 8px; height: 8px; border-radius: 50%;
+    margin-top: 4px; flex-shrink: 0;
+    border: 2px solid white; box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+  }
+  .tl-ev   { font-size: 12.5px; color: var(--text1); line-height: 1.5; padding-bottom: 8px; flex: 1; }
+
+  /* ── CHECKLIST inside section ── */
+  .chk-wrap { padding: 8px 16px 14px; }
+  .chk-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; cursor: pointer; }
+  .chk-item:not(:last-child) { border-bottom: 1px solid var(--div); }
+  .chk-box {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid var(--div); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .chk-box.on { background: var(--green); border-color: var(--green); color: white; font-size: 12px; }
+  .chk-txt { font-size: 13.5px; color: var(--text1); flex: 1; line-height: 1.4; }
+  .chk-txt.done { text-decoration: line-through; color: var(--text2); }
+
+  /* ── MODAL ── */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.42);
+    z-index: 200; display: none; align-items: flex-end; justify-content: center;
+  }
+  .overlay.open { display: flex; }
+  .modal {
+    background: var(--card); border-radius: 24px 24px 0 0;
+    padding: 12px 20px 48px; width: 100%; max-width: 480px;
+    max-height: 92vh; overflow-y: auto;
+    animation: up 0.3s cubic-bezier(0.32,0.72,0,1);
+  }
+  @keyframes up { from{transform:translateY(100%)} to{transform:translateY(0)} }
+  .m-handle { width: 36px; height: 4px; background: var(--div); border-radius: 2px; margin: 0 auto 16px; }
+  .m-title  { font-size: 20px; font-weight: 800; color: var(--text1); margin-bottom: 20px; letter-spacing: -0.3px; }
+  .fg { margin-bottom: 14px; }
+  .fl {
+    font-size: 11.5px; font-weight: 600; color: var(--text2);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 6px; display: block;
+  }
+  .fi, .fs, .ft {
+    width: 100%; background: var(--bg); border: 1.5px solid transparent;
+    border-radius: 11px; padding: 12px 13px; font-size: 15px;
+    font-family: var(--font); color: var(--text1); outline: none;
+    transition: border-color 0.2s;
+  }
+  .fi:focus, .fs:focus, .ft:focus { border-color: var(--blue); }
+  .ft { resize: vertical; min-height: 70px; }
+  .f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .fer { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+  .fer .fi { flex: 1; } .fer .fi.amt { flex: 0 0 95px; }
+  .btn-rf {
+    background: #FFD9D9; border: none; border-radius: 8px;
+    width: 34px; height: 42px; color: var(--red); font-size: 18px;
+    cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn-af {
+    background: var(--bg); border: 1.5px dashed var(--div);
+    border-radius: 11px; padding: 10px; width: 100%;
+    font-size: 13px; color: var(--blue); font-weight: 600;
+    font-family: var(--font); cursor: pointer; margin-top: 4px;
+  }
+  .m-actions { display: flex; gap: 10px; margin-top: 22px; }
+  .btn-cancel {
+    flex: 1; background: var(--bg); border: none; border-radius: 13px;
+    padding: 15px; font-size: 15px; font-weight: 600;
+    color: var(--text1); font-family: var(--font); cursor: pointer;
+  }
+  .btn-save {
+    flex: 2; background: var(--blue); border: none; border-radius: 13px;
+    padding: 15px; font-size: 15px; font-weight: 700;
+    color: white; font-family: var(--font); cursor: pointer;
+  }
+  .btn-save:active { opacity: 0.85; }
+
+  /* ── PORTFOLIO EDIT MODAL ── */
+  .snap-modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* ── MISC ── */
+  .spinner {
+    width: 26px; height: 26px; border: 3px solid var(--div);
+    border-top-color: var(--blue); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 0 auto 10px;
+  }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .loading { text-align: center; padding: 30px 20px; color: var(--text2); }
+  .empty-goals { text-align: center; padding: 20px; color: var(--text2); font-size: 13px; }
+
+  .toast {
+    position: fixed; bottom: 32px; left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: #1C1C1E; color: white; padding: 10px 22px;
+    border-radius: 22px; font-size: 13.5px; font-weight: 500;
+    opacity: 0; transition: all 0.28s; z-index: 300; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.err  { background: var(--red); }
+
+  .add-goal-row {
+    padding: 4px 10px 12px;
+  }
+  .btn-add-inline {
+    width: 100%; background: none; border: 1.5px dashed var(--div);
+    border-radius: 10px; padding: 9px;
+    font-size: 13px; color: var(--blue); font-weight: 600;
+    font-family: var(--font); cursor: pointer;
+  }
+  .btn-add-inline:active { opacity: 0.7; }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-inner">
+    <div>
+      <div class="nav-title">📋 Investment Goals</div>
+      <div class="nav-sub" id="nav-sub">Loading…</div>
+    </div>
+    <button class="btn-add" onclick="openAddModal()">＋ Add Goal</button>
+  </div>
+</div>
+
+<div class="content" id="main-content">
+  <div class="loading"><div class="spinner"></div>Loading…</div>
+</div>
+
+<!-- GOAL MODAL -->
+<div class="overlay" id="m-goal" onclick="overlayClose(event,'m-goal')">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div class="m-title" id="m-goal-title">Add Goal</div>
+    <div class="fg"><label class="fl">Goal Name</label><input class="fi" id="f-name" placeholder="e.g. Son's Graduation"/></div>
+    <div class="f2">
+      <div class="fg">
+        <label class="fl">Category</label>
+        <select class="fs" id="f-cat">
+          <option>Education</option>
+          <option>FIRE / Retirement</option>
+          <option>Housing</option>
+          <option>Vacation</option>
+          <option>Gold / Hedge</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl">Status</label>
+        <select class="fs" id="f-status">
+          <option value="on-track">On Track</option>
+          <option value="in-progress">In Progress</option>
+          <option value="auto-funded">Auto-Funded</option>
+          <option value="not-started">Not Started</option>
+          <option value="complete">Complete</option>
+        </select>
+      </div>
+    </div>
+    <div class="f2">
+      <div class="fg"><label class="fl">Target Amount</label><input class="fi" id="f-target" placeholder="₹1.3 Crore"/></div>
+      <div class="fg"><label class="fl">Target Year</label><input class="fi" id="f-year" type="number" placeholder="2040"/></div>
+    </div>
+    <div class="f2">
+      <div class="fg"><label class="fl">Emoji</label><input class="fi" id="f-emoji" placeholder="🎓" maxlength="2"/></div>
+      <div class="fg"><label class="fl">Status Note</label><input class="fi" id="f-cur" placeholder="Corpus building"/></div>
+    </div>
+    <div class="fg">
+      <label class="fl">Tagged Funds & SIP</label>
+      <div id="f-editor"></div>
+      <button class="btn-af" onclick="addFundRow()">＋ Add Fund</button>
+    </div>
+    <div class="fg"><label class="fl">Exit Strategy / Notes</label><textarea class="ft" id="f-note" placeholder="e.g. 2037 → Move to HDFC BAF → SWP from 2040"></textarea></div>
+    <div class="m-actions">
+      <button class="btn-cancel" onclick="closeModal('m-goal')">Cancel</button>
+      <button class="btn-save" onclick="saveGoal()">Save Goal</button>
+    </div>
+  </div>
+</div>
+
+<!-- PORTFOLIO EDIT MODAL -->
+<div class="overlay" id="m-portfolio" onclick="overlayClose(event,'m-portfolio')">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div class="m-title">Edit Portfolio</div>
+    <div class="snap-modal-grid">
+      <div class="fg"><label class="fl">Portfolio Value</label><input class="fi" id="p-val" placeholder="₹26L"/></div>
+      <div class="fg"><label class="fl">Monthly SIP</label><input class="fi" id="p-sip" placeholder="₹80,000"/></div>
+      <div class="fg"><label class="fl">Loan EMI</label><input class="fi" id="p-emi" placeholder="₹53,433"/></div>
+      <div class="fg"><label class="fl">Loan Closes</label><input class="fi" id="p-loan" placeholder="2027–28"/></div>
+      <div class="fg"><label class="fl">Post-Loan SIP</label><input class="fi" id="p-postsip" placeholder="₹1.33L/mo"/></div>
+      <div class="fg"><label class="fl">FIRE Target</label><input class="fi" id="p-fire" placeholder="Age 42 / 2033"/></div>
+    </div>
+    <div class="m-actions">
+      <button class="btn-cancel" onclick="closeModal('m-portfolio')">Cancel</button>
+      <button class="btn-save" onclick="savePortfolio()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api/goals';
+
+// ── STATE ────────────────────────────────────────────────────────────────
+let goals = [];
+let editingId = null;
+let openSections = new Set(['portfolio']); // portfolio open by default
+let checkedItems = JSON.parse(localStorage.getItem('ck') || '{}');
+
+let pf = JSON.parse(localStorage.getItem('pf') || JSON.stringify({
+  value:   '₹26L',
+  sip:     '₹80,000',
+  emi:     '₹53,433',
+  loan:    '2027–28',
+  postsip: '₹1.33L / mo',
+  fire:    'Age 42 / 2033'
+}));
+
+const TIMELINE = [
+  {y:"2026–27", e:"Loan closure phase. SIPs running. Parents contributing ₹5–6L/year.", c:"#FF3B30"},
+  {y:"2028",    e:"Personal loan closed 🎉 Start house fund (₹25k/mo). Total SIP → ₹1.33L/month.", c:"#FF9500"},
+  {y:"2031",    e:"Move Intermediate education corpus → HDFC BAF.", c:"#FF9500"},
+  {y:"2032–33", e:"House purchase. ₹25–30L down payment ready. FIRE evaluation.", c:"#007AFF"},
+  {y:"2033–34", e:"FIRE 🔥 Work stops. SWP ₹60–70k/month from HDFC BAF.", c:"#34C759"},
+  {y:"2037",    e:"Move Graduation corpus → HDFC BAF. SWP for college fees.", c:"#34C759"},
+  {y:"2038",    e:"Son's Intermediate 🎓 SWP from BAF covers ₹16L.", c:"#34C759"},
+  {y:"2040",    e:"Son's Graduation 🎓 SWP from BAF covers ₹1.3Cr.", c:"#34C759"},
+  {y:"2041",    e:"Move Higher Education corpus → HDFC BAF.", c:"#34C759"},
+  {y:"2044",    e:"Son's Higher Education 🎓 SWP from BAF covers ₹1.8Cr.", c:"#34C759"}
+];
+
+const CL = JSON.parse(localStorage.getItem('cl') || JSON.stringify([
+  "Increase SIP by 10% every year 📈",
+  "Rebalance if equity drifts above 75% ⚖️",
+  "Check loan outstanding — parents contribution 🏦",
+  "Review gold allocation — Goldbees active? 🥇",
+  "Track each goal corpus vs target 🎯",
+  "Don't panic sell during corrections 🧘",
+  "Review & update FIRE corpus target 🔥",
+  "Update portfolio value in snapshot 📊"
+]));
+
+const SC = {
+  'on-track':    {l:'On Track',    c:'pill-green'},
+  'in-progress': {l:'In Progress', c:'pill-orange'},
+  'auto-funded': {l:'Auto-Funded', c:'pill-blue'},
+  'not-started': {l:'Not Started', c:'pill-red'},
+  'complete':    {l:'Complete ✓',  c:'pill-purple'}
+};
+
+const CAT_EMOJI = {
+  'Education':'🎓','FIRE / Retirement':'🔥',
+  'Housing':'🏠','Vacation':'✈️','Gold / Hedge':'🥇','Other':'📌'
+};
+
+// ── API ──────────────────────────────────────────────────────────────────
+async function fetchGoals() {
+  try {
+    const r = await fetch(API);
+    if (!r.ok) throw 0;
+    goals = (await r.json()).map(g => ({...g, year: g.targetYear || 0}));
+    renderAll();
+    setNavSub();
+  } catch {
+    goals = [];
+    renderAll();
+    document.getElementById('nav-sub').textContent = '⚠️ Cannot connect to server';
+  }
+}
+
+async function apiCall(url, method, body) {
+  const r = await fetch(url, {
+    method,
+    headers: {'Content-Type':'application/json'},
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return method === 'DELETE' ? null : r.json();
+}
+
+function setNavSub() {
+  const now = new Date();
+  document.getElementById('nav-sub').textContent =
+    `Synced ${now.toLocaleDateString('en-IN',{day:'numeric',month:'short'})} at ${now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
+}
+
+// ── SECTIONS ─────────────────────────────────────────────────────────────
+function toggleSection(id) {
+  if (openSections.has(id)) openSections.delete(id);
+  else openSections.add(id);
+  renderAll();
+}
+
+function renderAll() {
+  const el = document.getElementById('main-content');
+
+  // Group goals by category
+  const groups = {};
+  goals.forEach(g => {
+    const k = g.category || 'Other';
+    (groups[k] = groups[k] || []).push(g);
+  });
+
+  let html = '';
+
+  // 1. PORTFOLIO SNAPSHOT
+  html += renderSection({
+    id: 'portfolio',
+    emoji: '📊',
+    label: 'Portfolio Snapshot',
+    meta: pf.value,
+    body: renderPortfolioBody()
+  });
+
+  // 2. GOAL CATEGORIES
+  const catOrder = ['Education','FIRE / Retirement','Housing','Vacation','Gold / Hedge','Other'];
+  catOrder.forEach(cat => {
+    if (!groups[cat]) return;
+    const items = groups[cat];
+    const statusSummary = items.map(g => SC[g.status]?.l || g.status).join(', ');
+    html += renderSection({
+      id: `cat-${cat}`,
+      emoji: CAT_EMOJI[cat] || '📌',
+      label: cat,
+      meta: `${items.length} goal${items.length > 1 ? 's' : ''}`,
+      body: renderCategoryBody(cat, items)
+    });
+  });
+
+  // Any categories not in order
+  Object.keys(groups).forEach(cat => {
+    if (!catOrder.includes(cat)) {
+      const items = groups[cat];
+      html += renderSection({
+        id: `cat-${cat}`,
+        emoji: '📌',
+        label: cat,
+        meta: `${items.length} goal${items.length > 1 ? 's' : ''}`,
+        body: renderCategoryBody(cat, items)
+      });
+    }
+  });
+
+  // 3. ROADMAP
+  html += renderSection({
+    id: 'roadmap',
+    emoji: '🗓',
+    label: 'Roadmap',
+    meta: `${TIMELINE.length} milestones`,
+    body: renderRoadmapBody()
+  });
+
+  // 4. CHECKLIST
+  const done = Object.values(checkedItems).filter(Boolean).length;
+  html += renderSection({
+    id: 'checklist',
+    emoji: '✅',
+    label: 'Annual Checklist',
+    meta: `${done}/${CL.length} done`,
+    body: renderChecklistBody()
+  });
+
+  el.innerHTML = html;
+}
+
+function catToSecClass(id) {
+  if (id === 'portfolio') return 'sec-portfolio';
+  if (id === 'roadmap')   return 'sec-roadmap';
+  if (id === 'checklist') return 'sec-checklist';
+  const cat = id.replace('cat-','').toLowerCase();
+  if (cat.includes('education'))  return 'sec-education';
+  if (cat.includes('fire'))       return 'sec-fire';
+  if (cat.includes('housing'))    return 'sec-housing';
+  if (cat.includes('vacation'))   return 'sec-vacation';
+  if (cat.includes('gold'))       return 'sec-gold';
+  return 'sec-other';
+}
+
+function renderSection({id, emoji, label, meta, body}) {
+  const isOpen = openSections.has(id);
+  const cls = catToSecClass(id);
+  return `
+  <div class="section ${cls} ${isOpen ? 'open' : ''}" id="sec-${id}">
+    <button class="section-toggle" onclick="toggleSection('${id}')">
+      <span class="section-emoji">${emoji}</span>
+      <span class="section-label">${label}</span>
+      <span class="section-meta">${meta}</span>
+      <span class="section-chevron">▼</span>
+    </button>
+    <div class="section-body">
+      <div class="section-divider"></div>
+      ${body}
+    </div>
+  </div>`;
+}
+
+// ── PORTFOLIO BODY ────────────────────────────────────────────────────────
+function renderPortfolioBody() {
+  return `
+  <div class="snapshot-grid">
+    <div class="snap-tile" style="--tile-color:#007AFF">
+      <div class="snap-tile-label">Portfolio Value</div>
+      <div class="snap-tile-value" style="color:#007AFF">${pf.value}</div>
+      <div class="snap-tile-sub">Current</div>
+    </div>
+    <div class="snap-tile" style="--tile-color:#34C759">
+      <div class="snap-tile-label">Monthly SIP</div>
+      <div class="snap-tile-value" style="color:#34C759">${pf.sip}</div>
+      <div class="snap-tile-sub">Active</div>
+    </div>
+    <div class="snap-tile" style="--tile-color:#FF9500">
+      <div class="snap-tile-label">Active Goals</div>
+      <div class="snap-tile-value" style="color:#FF9500">${goals.length}</div>
+      <div class="snap-tile-sub">Being tracked</div>
+    </div>
+    <div class="snap-tile" style="--tile-color:#FF3B30">
+      <div class="snap-tile-label">FIRE Target</div>
+      <div class="snap-tile-value" style="font-size:15px;color:#FF3B30">${pf.fire}</div>
+      <div class="snap-tile-sub">Retirement</div>
+    </div>
+  </div>
+  <div class="key-numbers">
+    <div class="kn-row">
+      <span class="kn-lbl">Personal Loan EMI</span>
+      <span class="kn-val r">${pf.emi} / mo</span>
+    </div>
+    <div class="kn-row">
+      <span class="kn-lbl">Loan Closes</span>
+      <span class="kn-val g">${pf.loan} 🎉</span>
+    </div>
+    <div class="kn-row">
+      <span class="kn-lbl">Post-Loan SIP</span>
+      <span class="kn-val b">${pf.postsip}</span>
+    </div>
+    <div class="kn-row">
+      <span class="kn-lbl">₹26L corpus @12% × 18yr</span>
+      <span class="kn-val g">~₹1.8 Cr ✅</span>
+    </div>
+    <div class="kn-row">
+      <span class="kn-lbl">Higher Ed goal funded by</span>
+      <span class="kn-val">Existing corpus alone</span>
+    </div>
+  </div>
+  <div class="snap-edit-row">
+    <button class="snap-edit-btn" onclick="openPortfolioEdit()">✏️ Edit Snapshot</button>
+  </div>`;
+}
+
+// ── CATEGORY BODY ─────────────────────────────────────────────────────────
+function renderCategoryBody(cat, items) {
+  let html = '';
+  items.forEach(g => { html += renderGoalCard(g); });
+  html += `<div class="add-goal-row">
+    <button class="btn-add-inline" onclick="openAddModalForCat('${cat.replace(/'/g,"\\'")}')">＋ Add ${cat} Goal</button>
+  </div>`;
+  return html;
+}
+
+function catGoalClass(cat) {
+  if (!cat) return 'cat-other';
+  const c = cat.toLowerCase();
+  if (c.includes('education'))  return 'cat-education';
+  if (c.includes('fire'))       return 'cat-fire';
+  if (c.includes('housing'))    return 'cat-housing';
+  if (c.includes('vacation'))   return 'cat-vacation';
+  if (c.includes('gold'))       return 'cat-gold';
+  return 'cat-other';
+}
+
+function renderGoalCard(g) {
+  const sc = SC[g.status] || {l:g.status, c:'pill-orange'};
+  const yr = g.year > 0 ? g.year : 'Ongoing';
+  const fundsHTML = g.funds?.length
+    ? `<div class="funds-label">Tagged Funds</div>${g.funds.map(f =>
+        `<div class="fund-row"><span class="fund-name">${f.name}</span><span class="fund-amt">${f.amount||''}</span></div>`
+      ).join('')}`
+    : '';
+
+  return `
+  <div class="goal-card ${catGoalClass(g.category)}">
+    <div class="goal-header">
+      <div class="goal-name">
+        ${g.emoji||'📌'} ${g.name}
+        <span class="pill ${sc.c}">${sc.l}</span>
+      </div>
+      <div class="goal-actions">
+        <button class="btn-icon" onclick="editGoal(${g.id})">✏️</button>
+        <button class="btn-icon" onclick="delGoal(${g.id})">🗑</button>
+      </div>
+    </div>
+    <div class="goal-divider"></div>
+    <div class="goal-body">
+      ${g.target ? `<div class="info-row"><span class="info-lbl">Target</span><span class="info-val o">${g.target}</span></div>` : ''}
+      ${g.year   ? `<div class="info-row"><span class="info-lbl">Year</span><span class="info-val">${yr}</span></div>` : ''}
+      ${g.current ? `<div class="info-row"><span class="info-lbl">Status</span><span class="info-val" style="color:var(--text3);font-size:12px">${g.current}</span></div>` : ''}
+      ${fundsHTML}
+      ${g.note ? `<div class="note-box">${g.note.replace(/\n/g,'<br>')}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+// ── ROADMAP BODY ──────────────────────────────────────────────────────────
+function renderRoadmapBody() {
+  return `<div class="tl-wrap">` +
+    TIMELINE.map((t,i) => `
+    <div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-yr">${t.y}</div>
+        ${i < TIMELINE.length-1 ? '<div class="tl-line"></div>' : ''}
+      </div>
+      <div class="tl-dot" style="background:${t.c}"></div>
+      <div class="tl-ev">${t.e}</div>
+    </div>`).join('') + `</div>`;
+}
+
+// ── CHECKLIST BODY ────────────────────────────────────────────────────────
+function renderChecklistBody() {
+  return `<div class="chk-wrap">` +
+    CL.map((item, i) => {
+      const on = checkedItems[i];
+      return `<div class="chk-item" onclick="toggleChk(${i})">
+        <div class="chk-box ${on?'on':''}"></div>
+        <span class="chk-txt ${on?'done':''}">${item}</span>
+      </div>`;
+    }).join('') + `</div>`;
+}
+
+function toggleChk(i) {
+  checkedItems[i] = !checkedItems[i];
+  localStorage.setItem('ck', JSON.stringify(checkedItems));
+  // Re-render just the checklist section body without closing it
+  const sec = document.getElementById('sec-checklist');
+  if (sec) {
+    const body = sec.querySelector('.section-body');
+    if (body) {
+      const done = Object.values(checkedItems).filter(Boolean).length;
+      sec.querySelector('.section-meta').textContent = `${done}/${CL.length} done`;
+      const chkWrap = body.querySelector('.chk-wrap');
+      if (chkWrap) chkWrap.outerHTML = renderChecklistBody().replace('<div class="chk-wrap">','<div class="chk-wrap">');
+      // Full partial re-render
+      body.innerHTML = '<div class="section-divider"></div>' + renderChecklistBody();
+    }
+  }
+}
+
+// ── PORTFOLIO EDIT ────────────────────────────────────────────────────────
+function openPortfolioEdit() {
+  document.getElementById('p-val').value    = pf.value;
+  document.getElementById('p-sip').value    = pf.sip;
+  document.getElementById('p-emi').value    = pf.emi;
+  document.getElementById('p-loan').value   = pf.loan;
+  document.getElementById('p-postsip').value= pf.postsip;
+  document.getElementById('p-fire').value   = pf.fire;
+  openModal('m-portfolio');
+}
+
+function savePortfolio() {
+  pf = {
+    value:   document.getElementById('p-val').value.trim()     || pf.value,
+    sip:     document.getElementById('p-sip').value.trim()     || pf.sip,
+    emi:     document.getElementById('p-emi').value.trim()     || pf.emi,
+    loan:    document.getElementById('p-loan').value.trim()    || pf.loan,
+    postsip: document.getElementById('p-postsip').value.trim() || pf.postsip,
+    fire:    document.getElementById('p-fire').value.trim()    || pf.fire
+  };
+  localStorage.setItem('pf', JSON.stringify(pf));
+  closeModal('m-portfolio');
+  renderAll();
+  toast('Portfolio updated ✓');
+}
+
+// ── GOAL CRUD ─────────────────────────────────────────────────────────────
+function openAddModal() {
+  editingId = null;
+  document.getElementById('m-goal-title').textContent = 'Add New Goal';
+  clearForm();
+  addFundRow();
+  openModal('m-goal');
+}
+
+function openAddModalForCat(cat) {
+  openAddModal();
+  document.getElementById('f-cat').value = cat;
+}
+
+function editGoal(id) {
+  editingId = id;
+  const g = goals.find(x => x.id === id);
+  if (!g) return;
+  document.getElementById('m-goal-title').textContent = 'Edit Goal';
+  document.getElementById('f-name').value   = g.name || '';
+  document.getElementById('f-cat').value    = g.category || 'Education';
+  document.getElementById('f-status').value = g.status || 'on-track';
+  document.getElementById('f-target').value = g.target || '';
+  document.getElementById('f-year').value   = g.year > 0 ? g.year : '';
+  document.getElementById('f-emoji').value  = g.emoji || '';
+  document.getElementById('f-cur').value    = g.current || '';
+  document.getElementById('f-note').value   = g.note || '';
+  document.getElementById('f-editor').innerHTML = '';
+  (g.funds || []).forEach(f => addFundRow(f.name, f.amount));
+  openModal('m-goal');
+}
+
+async function saveGoal() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { toast('Please enter a goal name', true); return; }
+
+  const funds = [...document.querySelectorAll('#f-editor .fer')].map(r => {
+    const i = r.querySelectorAll('input');
+    return {name: i[0].value.trim(), amount: i[1].value.trim()};
+  }).filter(f => f.name);
+
+  const payload = {
+    name,
+    category:   document.getElementById('f-cat').value,
+    status:     document.getElementById('f-status').value,
+    emoji:      document.getElementById('f-emoji').value || '📌',
+    target:     document.getElementById('f-target').value.trim(),
+    targetYear: parseInt(document.getElementById('f-year').value) || null,
+    current:    document.getElementById('f-cur').value.trim(),
+    note:       document.getElementById('f-note').value.trim(),
+    funds
+  };
+
+  try {
+    if (editingId) {
+      const u = await apiCall(`${API}/${editingId}`, 'PUT', payload);
+      u.year = u.targetYear || 0;
+      const idx = goals.findIndex(g => g.id === editingId);
+      if (idx !== -1) goals[idx] = u;
+      // Keep that category section open
+      openSections.add(`cat-${u.category}`);
+      toast('Goal updated ✓');
+    } else {
+      const c = await apiCall(API, 'POST', payload);
+      c.year = c.targetYear || 0;
+      goals.push(c);
+      openSections.add(`cat-${c.category}`);
+      toast('Goal added ✓');
+    }
+    closeModal('m-goal');
+    renderAll();
+    setNavSub();
+  } catch { toast('Failed to save. Try again.', true); }
+}
+
+async function delGoal(id) {
+  if (!confirm('Delete this goal?')) return;
+  try {
+    await apiCall(`${API}/${id}`, 'DELETE');
+    goals = goals.filter(g => g.id !== id);
+    renderAll();
+    toast('Goal deleted');
+  } catch { toast('Failed to delete.', true); }
+}
+
+// ── MODAL HELPERS ─────────────────────────────────────────────────────────
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+function overlayClose(e, id) {
+  if (e.target === document.getElementById(id)) closeModal(id);
+}
+
+function clearForm() {
+  ['f-name','f-target','f-year','f-emoji','f-cur','f-note'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-cat').value    = 'Education';
+  document.getElementById('f-status').value = 'on-track';
+  document.getElementById('f-editor').innerHTML = '';
+}
+
+function addFundRow(name='', amount='') {
+  const e = document.getElementById('f-editor');
+  const r = document.createElement('div');
+  r.className = 'fer';
+  r.innerHTML = `<input class="fi" placeholder="Fund name" value="${name}"/>
+    <input class="fi amt" placeholder="₹0,000" value="${amount}"/>
+    <button class="btn-rf" onclick="this.parentElement.remove()">−</button>`;
+  e.appendChild(r);
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────
+function toast(msg, isErr=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${isErr?'err':''} show`;
+  setTimeout(() => t.className = 'toast', 2500);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+fetchGoals();
+</script>
+</body>
+</html>
