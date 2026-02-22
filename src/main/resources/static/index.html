@@ -224,31 +224,66 @@
 
 
     /* ── TIMELINE inside section ── */
-    .tl-wrap { padding: 8px 16px 14px; }
-    .tl-item { display: flex; gap: 10px; padding: 3px 0; }
-    .tl-left { display: flex; flex-direction: column; align-items: center; width: 42px; flex-shrink: 0; }
-    .tl-yr   { font-size: 13px; font-weight: 700; color: var(--text2); text-align: center; }
-    .tl-line { width: 1px; flex: 1; background: var(--div); margin-top: 3px; min-height: 10px; }
-    .tl-dot  {
-      width: 8px; height: 8px; border-radius: 50%;
-      margin-top: 4px; flex-shrink: 0;
-      border: 2px solid white; box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+    .tl-wrap { padding: 4px 0 4px; }
+    .tl-item {
+      display: flex; gap: 0; padding: 11px 16px;
+      border-bottom: 1px solid var(--div);
+      align-items: center;
     }
-    .tl-ev   { font-size: 14px; color: var(--text1); line-height: 1.5; padding-bottom: 8px; flex: 1; }
+    .tl-item:last-child { border-bottom: none; }
+    .tl-left { display: none; }
+    .tl-yr   {
+      font-size: 12px; font-weight: 800; color: white;
+      white-space: nowrap; width: 72px; min-width: 72px;
+      text-align: center; flex-shrink: 0;
+      background: var(--text2); border-radius: 20px;
+      padding: 4px 0; letter-spacing: -0.2px;
+      margin-right: 14px;
+    }
+    .tl-line { display: none; }
+
+    .tl-ev   { font-size: 14.5px; color: var(--text1); line-height: 1.5; flex: 1; }
+
+    .tl-actions { display: flex; gap: 6px; flex-shrink: 0; margin-left: 10px; }
+    .tl-btn {
+      background: rgba(0,0,0,0.04); border: none; border-radius: 7px;
+      width: 28px; height: 28px; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; font-size: 12px;
+    }
+    .tl-btn:active { opacity: 0.6; }
+    .tl-add-row { padding: 4px 16px 12px; }
+    .tl-add-btn {
+      width: 100%; background: none; border: 1.5px dashed var(--div);
+      border-radius: 10px; padding: 9px; font-size: 13px;
+      color: var(--blue); font-weight: 600; font-family: var(--font); cursor: pointer;
+    }
 
     /* ── CHECKLIST inside section ── */
     .chk-wrap { padding: 8px 16px 14px; }
-    .chk-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; cursor: pointer; }
+    .chk-item { display: flex; align-items: center; gap: 12px; padding: 9px 0; cursor: pointer; }
     .chk-item:not(:last-child) { border-bottom: 1px solid var(--div); }
     .chk-box {
       width: 22px; height: 22px; border-radius: 50%;
       border: 2px solid var(--div); flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s;
+      transition: all 0.2s; color: transparent; font-size: 12px;
     }
     .chk-box.on { background: var(--green); border-color: var(--green); color: white; font-size: 12px; }
     .chk-txt { font-size: 15px; color: var(--text1); flex: 1; line-height: 1.4; }
     .chk-txt.done { text-decoration: line-through; color: var(--text2); }
+    .chk-del {
+      background: rgba(0,0,0,0.04); border: none; border-radius: 7px;
+      width: 30px; height: 30px; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; font-size: 13px;
+      flex-shrink: 0;
+    }
+    .chk-del:active { opacity: 0.6; }
+    .chk-add-row { padding: 4px 0 8px; }
+    .chk-add-btn {
+      width: 100%; background: none; border: 1.5px dashed var(--div);
+      border-radius: 10px; padding: 9px; font-size: 13px;
+      color: var(--blue); font-weight: 600; font-family: var(--font); cursor: pointer;
+    }
 
     /* ── MODAL ── */
     .overlay {
@@ -358,6 +393,33 @@
   <div class="loading"><div class="spinner"></div>Loading…</div>
 </div>
 
+<!-- ROADMAP MODAL -->
+<div class="overlay" id="m-roadmap" onclick="overlayClose(event,'m-roadmap')">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div class="m-title" id="m-roadmap-title">Add Milestone</div>
+    <div class="fg"><label class="fl">Year / Period</label><input class="fi" id="r-year" placeholder="e.g. 2028 or 2032–33"/></div>
+    <div class="fg"><label class="fl">Event Description</label><textarea class="ft" id="r-event" placeholder="e.g. Personal loan closed 🎉 Start house fund"></textarea></div>
+    <div class="m-actions">
+      <button class="btn-cancel" onclick="closeModal('m-roadmap')">Cancel</button>
+      <button class="btn-save" onclick="saveMilestone()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKLIST ADD MODAL -->
+<div class="overlay" id="m-checklist" onclick="overlayClose(event,'m-checklist')">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div class="m-title">Add Checklist Item</div>
+    <div class="fg"><label class="fl">Item</label><input class="fi" id="cl-item" placeholder="e.g. Review asset allocation 📊"/></div>
+    <div class="m-actions">
+      <button class="btn-cancel" onclick="closeModal('m-checklist')">Cancel</button>
+      <button class="btn-save" onclick="saveCheckItem()">Add</button>
+    </div>
+  </div>
+</div>
+
 <!-- GOAL MODAL -->
 <div class="overlay" id="m-goal" onclick="overlayClose(event,'m-goal')">
   <div class="modal">
@@ -448,20 +510,20 @@
     fire:    'Age 42 / 2033'
   }));
 
-  const TIMELINE = [
-    {y:"2026–27", e:"Loan closure phase. SIPs running. Parents contributing ₹5–6L/year.", c:"#FF3B30"},
-    {y:"2028",    e:"Personal loan closed 🎉 Start house fund (₹25k/mo). Total SIP → ₹1.33L/month.", c:"#FF9500"},
-    {y:"2031",    e:"Move Intermediate education corpus → HDFC BAF.", c:"#FF9500"},
-    {y:"2032–33", e:"House purchase. ₹25–30L down payment ready. FIRE evaluation.", c:"#007AFF"},
-    {y:"2033–34", e:"FIRE 🔥 Work stops. SWP ₹60–70k/month from HDFC BAF.", c:"#34C759"},
-    {y:"2037",    e:"Move Graduation corpus → HDFC BAF. SWP for college fees.", c:"#34C759"},
-    {y:"2038",    e:"Son's Intermediate 🎓 SWP from BAF covers ₹16L.", c:"#34C759"},
-    {y:"2040",    e:"Son's Graduation 🎓 SWP from BAF covers ₹1.3Cr.", c:"#34C759"},
-    {y:"2041",    e:"Move Higher Education corpus → HDFC BAF.", c:"#34C759"},
-    {y:"2044",    e:"Son's Higher Education 🎓 SWP from BAF covers ₹1.8Cr.", c:"#34C759"}
-  ];
+  let TIMELINE = JSON.parse(localStorage.getItem('tl') || JSON.stringify([
+    {y:"2026–27", e:"Loan closure phase. SIPs running. Parents contributing ₹5–6L/year."},
+    {y:"2028",    e:"Personal loan closed 🎉 Start house fund (₹25k/mo). Total SIP → ₹1.33L/month."},
+    {y:"2031",    e:"Move Intermediate education corpus → HDFC BAF."},
+    {y:"2032–33", e:"House purchase. ₹25–30L down payment ready. FIRE evaluation."},
+    {y:"2033–34", e:"FIRE 🔥 Work stops. SWP ₹60–70k/month from HDFC BAF."},
+    {y:"2037",    e:"Move Graduation corpus → HDFC BAF. SWP for college fees."},
+    {y:"2038",    e:"Son's Intermediate 🎓 SWP from BAF covers ₹16L."},
+    {y:"2040",    e:"Son's Graduation 🎓 SWP from BAF covers ₹1.3Cr."},
+    {y:"2041",    e:"Move Higher Education corpus → HDFC BAF."},
+    {y:"2044",    e:"Son's Higher Education 🎓 SWP from BAF covers ₹1.8Cr."}
+  ]));
 
-  const CL = JSON.parse(localStorage.getItem('cl') || JSON.stringify([
+  let CL = JSON.parse(localStorage.getItem('cl') || JSON.stringify([
     "Increase SIP by 10% every year 📈",
     "Rebalance if equity drifts above 75% ⚖️",
     "Check loan outstanding — parents contribution 🏦",
@@ -736,13 +798,16 @@
     return `<div class="tl-wrap">` +
             TIMELINE.map((t,i) => `
     <div class="tl-item">
-      <div class="tl-left">
-        <div class="tl-yr">${t.y}</div>
-        ${i < TIMELINE.length-1 ? '<div class="tl-line"></div>' : ''}
-      </div>
-      <div class="tl-dot" style="background:${t.c}"></div>
+      <div class="tl-yr">${t.y}</div>
       <div class="tl-ev">${t.e}</div>
-    </div>`).join('') + `</div>`;
+      <div class="tl-actions">
+        <button class="tl-btn" onclick="editMilestone(${i})" title="Edit">✏️</button>
+        <button class="tl-btn" onclick="delMilestone(${i})" title="Delete">🗑</button>
+      </div>
+    </div>`).join('') +
+            `<div class="tl-add-row">
+      <button class="tl-add-btn" onclick="openAddMilestone()">＋ Add Milestone</button>
+    </div></div>`;
   }
 
   // ── CHECKLIST BODY ────────────────────────────────────────────────────────
@@ -751,10 +816,14 @@
             CL.map((item, i) => {
               const on = checkedItems[i];
               return `<div class="chk-item" onclick="toggleChk(${i})">
-        <div class="chk-box ${on?'on':''}"></div>
+        <div class="chk-box ${on?'on':''}">&#10003;</div>
         <span class="chk-txt ${on?'done':''}">${item}</span>
+        <button class="chk-del" onclick="event.stopPropagation();delCheckItem(${i})" title="Delete">🗑</button>
       </div>`;
-            }).join('') + `</div>`;
+            }).join('') +
+            `<div class="chk-add-row">
+      <button class="chk-add-btn" onclick="openAddCheckItem()">＋ Add Item</button>
+    </div></div>`;
   }
 
   function toggleChk(i) {
@@ -916,6 +985,84 @@
     <input class="fi amt" placeholder="₹0,000" value="${amount}"/>
     <button class="btn-rf" onclick="this.parentElement.remove()">−</button>`;
     e.appendChild(r);
+  }
+
+  // ── CHECKLIST CRUD ───────────────────────────────────────────────────────────
+  function openAddCheckItem() {
+    document.getElementById('cl-item').value = '';
+    openModal('m-checklist');
+  }
+
+  function saveCheckItem() {
+    const txt = document.getElementById('cl-item').value.trim();
+    if (!txt) { toast('Please enter an item', true); return; }
+    CL.push(txt);
+    localStorage.setItem('cl', JSON.stringify(CL));
+    closeModal('m-checklist');
+    openSections.add('checklist');
+    renderAll();
+    toast('Item added ✓');
+  }
+
+  function delCheckItem(i) {
+    if (!confirm('Delete this checklist item?')) return;
+    CL.splice(i, 1);
+    // Shift checked state down
+    const newChecked = {};
+    Object.keys(checkedItems).forEach(k => {
+      const idx = parseInt(k);
+      if (idx < i) newChecked[idx] = checkedItems[idx];
+      else if (idx > i) newChecked[idx - 1] = checkedItems[idx];
+    });
+    checkedItems = newChecked;
+    localStorage.setItem('cl', JSON.stringify(CL));
+    localStorage.setItem('ck', JSON.stringify(checkedItems));
+    renderAll();
+    toast('Item deleted');
+  }
+
+  // ── ROADMAP CRUD ─────────────────────────────────────────────────────────────
+  let editingMilestoneIdx = null;
+
+  function openAddMilestone() {
+    editingMilestoneIdx = null;
+    document.getElementById('m-roadmap-title').textContent = 'Add Milestone';
+    document.getElementById('r-year').value = '';
+    document.getElementById('r-event').value = '';
+    openModal('m-roadmap');
+  }
+
+  function editMilestone(i) {
+    editingMilestoneIdx = i;
+    document.getElementById('m-roadmap-title').textContent = 'Edit Milestone';
+    document.getElementById('r-year').value = TIMELINE[i].y;
+    document.getElementById('r-event').value = TIMELINE[i].e;
+    openModal('m-roadmap');
+  }
+
+  function saveMilestone() {
+    const y = document.getElementById('r-year').value.trim();
+    const e = document.getElementById('r-event').value.trim();
+    if (!y || !e) { toast('Please fill in both fields', true); return; }
+    if (editingMilestoneIdx !== null) {
+      TIMELINE[editingMilestoneIdx] = {y, e};
+      toast('Milestone updated ✓');
+    } else {
+      TIMELINE.push({y, e});
+      toast('Milestone added ✓');
+    }
+    localStorage.setItem('tl', JSON.stringify(TIMELINE));
+    closeModal('m-roadmap');
+    openSections.add('roadmap');
+    renderAll();
+  }
+
+  function delMilestone(i) {
+    if (!confirm('Delete this milestone?')) return;
+    TIMELINE.splice(i, 1);
+    localStorage.setItem('tl', JSON.stringify(TIMELINE));
+    renderAll();
+    toast('Milestone deleted');
   }
 
   // ── TOAST ─────────────────────────────────────────────────────────────────
