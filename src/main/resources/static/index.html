@@ -24,6 +24,45 @@
       --font: -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif;
     }
 
+    /* ── DARK THEME ── */
+    body.dark {
+      --bg: #1C1C1E;
+      --card: #2C2C2E;
+      --text1: #F2F2F7;
+      --text2: #98989F;
+      --text3: #8E8E93;
+      --div: #3A3A3C;
+      --blue: #0A84FF;
+      --green: #30D158;
+      --orange: #FF9F0A;
+      --red: #FF453A;
+      --purple: #BF5AF2;
+    }
+    body.dark { background: #000000; }
+    body.dark .nav { background: rgba(28,28,30,0.96); }
+    body.dark .section { background: #1C1C1E; }
+    body.dark .section-toggle,
+    body.dark .section-toggle-wrap { background: #2C2C2E; }
+    body.dark .section-toggle:active { background: rgba(255,255,255,0.05); }
+    body.dark .goal-card,
+    body.dark .ins-card,
+    body.dark .snap-tile { background: #2C2C2E; box-shadow: none; }
+    body.dark .note-box { background: #1A2240; border-left-color: #2D4A8A; color: #A0B4E0; }
+    body.dark .pill-green  { background: #0D3320; color: #30D158; }
+    body.dark .pill-orange { background: #3A2000; color: #FF9F0A; }
+    body.dark .pill-blue   { background: #002060; color: #409CFF; }
+    body.dark .pill-red    { background: #3A0000; color: #FF453A; }
+    body.dark .pill-purple { background: #2A003A; color: #BF5AF2; }
+    body.dark .badge-term   { background: #002060; color: #409CFF; }
+    body.dark .badge-health { background: #0D3320; color: #30D158; }
+    body.dark .tl-yr { background: #3A3A3C; }
+    body.dark .fi, body.dark .fs, body.dark .ft { background: #3A3A3C; color: var(--text1); }
+    body.dark .modal { background: #2C2C2E; }
+    body.dark .btn-cancel { background: #3A3A3C; color: var(--text1); }
+    body.dark .ins-type-badge { }
+    body.dark .overlay { background: rgba(0,0,0,0.7); }
+
+
     body {
       font-family: var(--font);
       background: #EBEBF0;
@@ -54,6 +93,16 @@
     }
     .btn-add:active { opacity: 0.8; transform: scale(0.97); }
 
+    .theme-toggle {
+      background: var(--card); border: 1.5px solid var(--div);
+      border-radius: 20px; width: 36px; height: 36px;
+      font-size: 17px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .theme-toggle:active { transform: scale(0.9); }
+
     /* ── MAIN ── */
     .content { max-width: 480px; margin: 0 auto; padding: 14px 16px 20px; }
 
@@ -68,12 +117,12 @@
 
     /* Section toggle — no border accent */
 
+    .section-toggle-wrap { background: #FFFFFF; }
     .section-toggle {
-      width: 100%; background: #FFFFFF; border: none;
-      padding: 15px 16px; cursor: pointer;
+      background: #FFFFFF; border: none;
+      padding: 12px 16px 12px 4px; cursor: pointer;
       display: flex; align-items: center; gap: 10px;
-      font-family: var(--font);
-      text-align: left;
+      font-family: var(--font); text-align: left; width: 100%;
     }
     .section-toggle:active { background: rgba(0,0,0,0.02); }
 
@@ -86,13 +135,9 @@
     }
 
     .section-meta {
-      font-size: 13px; color: var(--text2);
-      font-weight: 600; margin-right: 6px;
+      font-size: 13px; color: var(--text1);
+      font-weight: 700; margin-right: 6px;
       flex-shrink: 0;
-      transition: color 0.2s;
-    }
-    .section.open .section-meta {
-      color: var(--blue);
     }
 
     .section-chevron {
@@ -127,7 +172,7 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04);
     }
     .snap-tile-label { font-size: 12px; color: var(--text2); font-weight: 500; margin-bottom: 3px; }
-    .snap-tile-value { font-size: 20px; font-weight: 800; color: var(--text1); letter-spacing: -0.3px; }
+    .snap-tile-value { font-size: 20px; font-weight: 800; color: var(--text1); letter-spacing: -0.5px; }
     .snap-tile-sub   { font-size: 10px; color: var(--text2); margin-top: 2px; }
 
     .snap-edit-row {
@@ -144,16 +189,23 @@
 
     .key-numbers { padding: 6px 16px 14px; }
     .kn-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 5px 0; border-bottom: 1px solid var(--div);
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 0; border-bottom: 1px solid var(--div);
     }
     .kn-row:last-child { border-bottom: none; }
-    .kn-lbl { font-size: 14px; color: var(--text2); }
+    .kn-lbl { font-size: 14px; color: var(--text2); flex: 1; }
+    .kn-del {
+      background: rgba(0,0,0,0.04); border: none; border-radius: 7px;
+      width: 28px; height: 28px; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; font-size: 15px;
+      color: var(--red); flex-shrink: 0;
+    }
+    .kn-del:active { opacity: 0.6; }
     .kn-val { font-size: 14px; color: var(--text1); font-weight: 600; text-align: right; }
-    .kn-val.o { color: var(--orange); }
-    .kn-val.g { color: var(--green); }
-    .kn-val.b { color: var(--blue); }
-    .kn-val.r { color: var(--red); }
+
+
+
+
 
     /* ── GOAL CARDS inside sections ── */
     .goal-card {
@@ -182,6 +234,8 @@
       cursor: pointer; font-size: 13px;
     }
     .btn-icon:active { opacity: 0.6; }
+    .btn-icon.del { background: rgba(0,0,0,0.04); color: var(--red); font-size: 16px; }
+    .btn-icon.del:active { opacity: 0.6; }
 
     .goal-divider { height: 1px; background: var(--div); margin: 10px 14px 0; }
 
@@ -192,15 +246,15 @@
     }
     .info-lbl { font-size: 14px; color: var(--text2); flex-shrink: 0; }
     .info-val { font-size: 14px; color: var(--text1); font-weight: 500; text-align: right; max-width: 58%; }
-    .info-val.o { color: var(--orange); font-weight: 700; }
+    .info-val { font-weight: 700; }
 
     .funds-label {
       font-size: 11px; font-weight: 700; color: var(--text2);
       text-transform: uppercase; letter-spacing: 0.07em;
-      margin: 8px 0 4px;
+      margin: 10px 0 4px;
     }
     .fund-row { display: flex; justify-content: space-between; padding: 2px 0; }
-    .fund-name { font-size: 14px; color: #3A3A3C; }
+    .fund-name { font-size: 14px; color: var(--text1); }
     .fund-amt  { font-size: 14px; color: var(--text1); font-weight: 600; }
 
     .note-box {
@@ -208,7 +262,7 @@
       background: #EFF3FF;
       border-left: 3px solid #B0C4FF;
       border-radius: 0 8px 8px 0;
-      font-size: 14px; color: #3A4A6B; line-height: 1.5;
+      font-size: 14px; color: var(--text3); line-height: 1.5;
     }
 
     /* STATUS PILL */
@@ -242,7 +296,7 @@
     }
     .tl-line { display: none; }
 
-    .tl-ev   { font-size: 14.5px; color: var(--text1); line-height: 1.5; flex: 1; }
+    .tl-ev   { font-size: 14px; color: var(--text1); line-height: 1.5; flex: 1; }
 
     .tl-actions { display: flex; gap: 6px; flex-shrink: 0; margin-left: 10px; }
     .tl-btn {
@@ -251,6 +305,8 @@
       justify-content: center; cursor: pointer; font-size: 12px;
     }
     .tl-btn:active { opacity: 0.6; }
+    .tl-btn.del { background: rgba(0,0,0,0.04); color: var(--red); font-size: 15px; }
+    .tl-btn.del:active { opacity: 0.6; }
     .tl-add-row { padding: 4px 16px 12px; }
     .tl-add-btn {
       width: 100%; background: none; border: 1.5px dashed var(--div);
@@ -269,13 +325,13 @@
       transition: all 0.2s; color: transparent; font-size: 12px;
     }
     .chk-box.on { background: var(--green); border-color: var(--green); color: white; font-size: 12px; }
-    .chk-txt { font-size: 15px; color: var(--text1); flex: 1; line-height: 1.4; }
+    .chk-txt { font-size: 14px; color: var(--text1); flex: 1; line-height: 1.4; }
     .chk-txt.done { text-decoration: line-through; color: var(--text2); }
     .chk-del {
       background: rgba(0,0,0,0.04); border: none; border-radius: 7px;
       width: 30px; height: 30px; display: flex; align-items: center;
-      justify-content: center; cursor: pointer; font-size: 13px;
-      flex-shrink: 0;
+      justify-content: center; cursor: pointer; font-size: 16px;
+      color: var(--red); flex-shrink: 0;
     }
     .chk-del:active { opacity: 0.6; }
     .chk-add-row { padding: 4px 0 8px; }
@@ -284,6 +340,47 @@
       border-radius: 10px; padding: 9px; font-size: 13px;
       color: var(--blue); font-weight: 600; font-family: var(--font); cursor: pointer;
     }
+
+    /* ── INSURANCE CARDS ── */
+    .ins-card {
+      background: #FFFFFF; margin: 8px 10px;
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+      overflow: hidden;
+    }
+    .ins-card:last-of-type { margin-bottom: 4px; }
+    .ins-header {
+      padding: 12px 14px 10px;
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .ins-type-badge {
+      display: inline-block; padding: 2px 9px; border-radius: 20px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+    .badge-term   { background: #D6EAFF; color: #0055B3; }
+    .badge-health { background: #D1F4DC; color: #1A7F37; }
+    .badge-other  { background: #F0E0FF; color: #7B2FBE; }
+    .ins-name { font-size: 16px; font-weight: 700; color: var(--text1); }
+    .ins-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .ins-divider { height: 1px; background: var(--div); margin: 0 14px; }
+    .ins-body { padding: 8px 14px 12px; }
+    .ins-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 4px 0;
+    }
+    .ins-lbl { font-size: 14px; color: var(--text2); }
+    .ins-val { font-size: 14px; font-weight: 700; color: var(--text1); }
+
+    /* ── DRAG TO REORDER ── */
+    .drag-handle {
+      cursor: grab; font-size: 16px; color: var(--text2);
+      padding: 4px 6px 4px 0; flex-shrink: 0; opacity: 0.4;
+      user-select: none;
+    }
+    .drag-handle:active { cursor: grabbing; }
+    .dragging { opacity: 0.4; transform: scale(0.98); }
+    .drag-over { border-top: 2px solid var(--blue); }
 
     /* ── MODAL ── */
     .overlay {
@@ -385,12 +482,62 @@
       <div class="nav-title">📋 Investment Goals</div>
       <div class="nav-sub" id="nav-sub">Loading…</div>
     </div>
-    <button class="btn-add" onclick="openAddModal()">＋ Add Goal</button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+      <button class="btn-add" onclick="openAddModal()">Add Goal</button>
+    </div>
   </div>
 </div>
 
 <div class="content" id="main-content">
   <div class="loading"><div class="spinner"></div>Loading…</div>
+</div>
+
+<!-- INSURANCE MODAL -->
+<div class="overlay" id="m-insurance" onclick="overlayClose(event,'m-insurance')">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div class="m-title" id="m-ins-title">Add Insurance</div>
+    <div class="f2">
+      <div class="fg">
+        <label class="fl">Type</label>
+        <select class="fs" id="ins-type">
+          <option value="term">Term Life</option>
+          <option value="health">Health</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Emoji</label><input class="fi" id="ins-emoji" placeholder="🛡️" maxlength="2"/></div>
+    </div>
+    <div class="fg"><label class="fl">Policy / Plan Name</label><input class="fi" id="ins-name" placeholder="e.g. LIC Tech Term"/></div>
+    <div class="f2">
+      <div class="fg"><label class="fl">Coverage</label><input class="fi" id="ins-cover" placeholder="e.g. ₹5 Crore"/></div>
+      <div class="fg"><label class="fl">Premium / yr</label><input class="fi" id="ins-premium" placeholder="e.g. ₹12,000"/></div>
+    </div>
+    <div class="f2">
+      <div class="fg"><label class="fl">Insurer</label><input class="fi" id="ins-insurer" placeholder="e.g. LIC, Star Health"/></div>
+      <div class="fg"><label class="fl">Valid Till</label><input class="fi" id="ins-valid" placeholder="e.g. Age 75 / 2064"/></div>
+    </div>
+    <div class="fg"><label class="fl">Notes</label><input class="fi" id="ins-note" placeholder="e.g. Family floater, includes top-up"/></div>
+    <div class="m-actions">
+      <button class="btn-cancel" onclick="closeModal('m-insurance')">Cancel</button>
+      <button class="btn-save" onclick="saveInsurance()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- KN ROW MODAL -->
+<div class="overlay" id="m-kn" onclick="overlayClose(event,'m-kn')">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div class="m-title">Add Key Number</div>
+    <div class="fg"><label class="fl">Label</label><input class="fi" id="kn-lbl-inp" placeholder="e.g. Emergency Fund"/></div>
+    <div class="fg"><label class="fl">Value</label><input class="fi" id="kn-val-inp" placeholder="e.g. ₹3L in liquid fund"/></div>
+    <div class="m-actions">
+      <button class="btn-cancel" onclick="closeModal('m-kn')">Cancel</button>
+      <button class="btn-save" onclick="saveKnRow()">Add</button>
+    </div>
+  </div>
 </div>
 
 <!-- ROADMAP MODAL -->
@@ -460,7 +607,7 @@
     <div class="fg">
       <label class="fl">Tagged Funds & SIP</label>
       <div id="f-editor"></div>
-      <button class="btn-af" onclick="addFundRow()">＋ Add Fund</button>
+      <button class="btn-af" onclick="addFundRow()">Add Fund</button>
     </div>
     <div class="fg"><label class="fl">Exit Strategy / Notes</label><textarea class="ft" id="f-note" placeholder="e.g. 2037 → Move to HDFC BAF → SWP from 2040"></textarea></div>
     <div class="m-actions">
@@ -500,6 +647,26 @@
   let editingId = null;
   let openSections = new Set(['portfolio']); // portfolio open by default
   let checkedItems = JSON.parse(localStorage.getItem('ck') || '{}');
+
+  let knRows = JSON.parse(localStorage.getItem('knr') || JSON.stringify([
+    {l:'Personal Loan EMI',       v:'₹53,433 / mo'},
+    {l:'Loan Closes',             v:'2027–28 🎉'},
+    {l:'Post-Loan SIP',           v:'₹1.33L / mo'},
+    {l:'₹26L corpus @12% × 18yr', v:'~₹1.8 Cr ✅'},
+    {l:'Higher Ed goal funded by', v:'Existing corpus alone'}
+  ]));
+
+  let insurances = JSON.parse(localStorage.getItem('ins') || JSON.stringify([
+    {id:1, type:'term',   emoji:'🛡️', name:'Abc Policy', insurer:'LIC', cover:'₹5 Crore',   premium:'', valid:'', note:'Term life insurance'},
+    {id:2, type:'health', emoji:'🏥', name:'Xyz Health Insurance', insurer:'Star Health', cover:'₹10 Lakhs', premium:'', valid:'', note:'Family floater'},
+    {id:3, type:'health', emoji:'➕', name:'Top-Up Plan', insurer:'', cover:'₹90 Lakhs', premium:'', valid:'', note:'Super top-up coverage'}
+  ]));
+
+  let sectionOrder = JSON.parse(localStorage.getItem('secOrder') || JSON.stringify(
+          ['portfolio','insurance','Education','FIRE / Retirement','Housing','Vacation','Gold / Hedge','roadmap','checklist']
+  ));
+
+  let editingInsId = null;
 
   let pf = JSON.parse(localStorage.getItem('pf') || JSON.stringify({
     value:   '₹26L',
@@ -588,73 +755,41 @@
   function renderAll() {
     const el = document.getElementById('main-content');
 
-    // Group goals by category
     const groups = {};
     goals.forEach(g => {
       const k = g.category || 'Other';
       (groups[k] = groups[k] || []).push(g);
     });
 
-    let html = '';
+    // Build section map
+    const sectionMap = {
+      portfolio: () => renderSection({id:'portfolio', emoji:'📊', label:'Portfolio Snapshot', meta: pf.value, body:renderPortfolioBody(), draggable:true}),
+      insurance: () => renderSection({id:'insurance', emoji:'🛡️', label:'Insurance', meta:`${insurances.length} polic${insurances.length===1?'y':'ies'}`, body:renderInsuranceBody(), draggable:true}),
+      roadmap:   () => renderSection({id:'roadmap',   emoji:'🗓', label:'Roadmap',   meta:`${TIMELINE.length} milestones`, body:renderRoadmapBody(), draggable:true}),
+      checklist: () => { const done=Object.values(checkedItems).filter(Boolean).length; return renderSection({id:'checklist',emoji:'✅',label:'Annual Checklist',meta:`${done}/${CL.length} done`,body:renderChecklistBody(), draggable:true}); }
+    };
 
-    // 1. PORTFOLIO SNAPSHOT
-    html += renderSection({
-      id: 'portfolio',
-      emoji: '📊',
-      label: 'Portfolio Snapshot',
-      meta: pf.value,
-      body: renderPortfolioBody()
-    });
-
-    // 2. GOAL CATEGORIES
-    const catOrder = ['Education','FIRE / Retirement','Housing','Vacation','Gold / Hedge','Other'];
-    catOrder.forEach(cat => {
-      if (!groups[cat]) return;
-      const items = groups[cat];
-      const statusSummary = items.map(g => SC[g.status]?.l || g.status).join(', ');
-      html += renderSection({
-        id: `cat-${cat}`,
-        emoji: CAT_EMOJI[cat] || '📌',
-        label: cat,
-        meta: `${items.length} goal${items.length > 1 ? 's' : ''}`,
-        body: renderCategoryBody(cat, items)
-      });
-    });
-
-    // Any categories not in order
+    // Ensure all goal categories in sectionOrder
     Object.keys(groups).forEach(cat => {
-      if (!catOrder.includes(cat)) {
-        const items = groups[cat];
+      if (!sectionOrder.includes(cat)) sectionOrder.push(cat);
+    });
+
+    let html = '';
+    sectionOrder.forEach(id => {
+      if (sectionMap[id]) {
+        html += sectionMap[id]();
+      } else if (groups[id]) {
+        const items = groups[id];
         html += renderSection({
-          id: `cat-${cat}`,
-          emoji: '📌',
-          label: cat,
-          meta: `${items.length} goal${items.length > 1 ? 's' : ''}`,
-          body: renderCategoryBody(cat, items)
+          id: `cat-${id}`, emoji: CAT_EMOJI[id]||'📌', label: id,
+          meta: `${items.length} goal${items.length>1?'s':''}`,
+          body: renderCategoryBody(id, items), draggable: true
         });
       }
     });
 
-    // 3. ROADMAP
-    html += renderSection({
-      id: 'roadmap',
-      emoji: '🗓',
-      label: 'Roadmap',
-      meta: `${TIMELINE.length} milestones`,
-      body: renderRoadmapBody()
-    });
-
-    // 4. CHECKLIST
-    const done = Object.values(checkedItems).filter(Boolean).length;
-    html += renderSection({
-      id: 'checklist',
-      emoji: '✅',
-      label: 'Annual Checklist',
-      meta: `${done}/${CL.length} done`,
-      body: renderChecklistBody()
-    });
-
     el.innerHTML = html;
+    initDragSections();
   }
 
   function catToSecClass(id) {
@@ -670,22 +805,61 @@
     return 'sec-other';
   }
 
-  function renderSection({id, emoji, label, meta, body}) {
+  function renderSection({id, emoji, label, meta, body, draggable}) {
     const isOpen = openSections.has(id);
     const cls = catToSecClass(id);
+    const realId = id.startsWith('cat-') ? id : id;
     return `
-  <div class="section ${cls} ${isOpen ? 'open' : ''}" id="sec-${id}">
-    <button class="section-toggle" onclick="toggleSection('${id}')">
-      <span class="section-emoji">${emoji}</span>
-      <span class="section-label">${label}</span>
-      <span class="section-meta">${meta}</span>
-      <span class="section-chevron">▼</span>
-    </button>
+  <div class="section ${cls} ${isOpen ? 'open' : ''}" id="sec-${id}" draggable="true" data-sid="${id}">
+    <div class="section-toggle-wrap">
+      <button class="section-toggle" style="flex:1" onclick="toggleSection('${id}')">
+        <span class="section-emoji">${emoji}</span>
+        <span class="section-label">${label}</span>
+        <span class="section-meta">${meta}</span>
+        <span class="section-chevron">▼</span>
+      </button>
+    </div>
     <div class="section-body">
       <div class="section-divider"></div>
       ${body}
     </div>
   </div>`;
+  }
+
+  // ── KEY NUMBERS DYNAMIC ──────────────────────────────────────────────────────
+  function renderKnRows() {
+    return knRows.map((r,i) => `
+    <div class="kn-row">
+      <span class="kn-lbl">${r.l}</span>
+      <span class="kn-val">${r.v}</span>
+      <button class="kn-del" onclick="delKnRow(${i})" title="Delete">🗑</button>
+    </div>`).join('');
+  }
+
+  function openAddKnRow() {
+    document.getElementById('kn-lbl-inp').value = '';
+    document.getElementById('kn-val-inp').value = '';
+    openModal('m-kn');
+  }
+
+  function saveKnRow() {
+    const l = document.getElementById('kn-lbl-inp').value.trim();
+    const v = document.getElementById('kn-val-inp').value.trim();
+    if (!l || !v) { toast('Please fill both fields', true); return; }
+    knRows.push({l, v});
+    localStorage.setItem('knr', JSON.stringify(knRows));
+    closeModal('m-kn');
+    openSections.add('portfolio');
+    renderAll();
+    toast('Row added ✓');
+  }
+
+  function delKnRow(i) {
+    if (!confirm('Delete this row?')) return;
+    knRows.splice(i, 1);
+    localStorage.setItem('knr', JSON.stringify(knRows));
+    renderAll();
+    toast('Row deleted');
   }
 
   // ── PORTFOLIO BODY ────────────────────────────────────────────────────────
@@ -694,50 +868,159 @@
   <div class="snapshot-grid">
     <div class="snap-tile">
       <div class="snap-tile-label">Portfolio Value</div>
-      <div class="snap-tile-value" style="color:#007AFF">${pf.value}</div>
+      <div class="snap-tile-value" >${pf.value}</div>
       <div class="snap-tile-sub">Current</div>
     </div>
     <div class="snap-tile">
       <div class="snap-tile-label">Monthly SIP</div>
-      <div class="snap-tile-value" style="color:#34C759">${pf.sip}</div>
+      <div class="snap-tile-value" >${pf.sip}</div>
       <div class="snap-tile-sub">Active</div>
     </div>
     <div class="snap-tile">
       <div class="snap-tile-label">Active Goals</div>
-      <div class="snap-tile-value" style="color:#FF9500">${goals.length}</div>
+      <div class="snap-tile-value" >${goals.length}</div>
       <div class="snap-tile-sub">Being tracked</div>
     </div>
     <div class="snap-tile">
       <div class="snap-tile-label">FIRE Target</div>
-      <div class="snap-tile-value" style="color:#FF3B30">${pf.fire}</div>
+      <div class="snap-tile-value" >${pf.fire}</div>
       <div class="snap-tile-sub">Retirement</div>
     </div>
   </div>
-  <div class="key-numbers">
-    <div class="kn-row">
-      <span class="kn-lbl">Personal Loan EMI</span>
-      <span class="kn-val r">${pf.emi} / mo</span>
-    </div>
-    <div class="kn-row">
-      <span class="kn-lbl">Loan Closes</span>
-      <span class="kn-val g">${pf.loan} 🎉</span>
-    </div>
-    <div class="kn-row">
-      <span class="kn-lbl">Post-Loan SIP</span>
-      <span class="kn-val b">${pf.postsip}</span>
-    </div>
-    <div class="kn-row">
-      <span class="kn-lbl">₹26L corpus @12% × 18yr</span>
-      <span class="kn-val g">~₹1.8 Cr ✅</span>
-    </div>
-    <div class="kn-row">
-      <span class="kn-lbl">Higher Ed goal funded by</span>
-      <span class="kn-val">Existing corpus alone</span>
-    </div>
+  <div class="key-numbers" id="kn-list">
+    ${renderKnRows()}
   </div>
   <div class="snap-edit-row">
     <button class="snap-edit-btn" onclick="openPortfolioEdit()">✏️ Edit Snapshot</button>
+    <button class="snap-edit-btn" onclick="openAddKnRow()" style="margin-left:8px">Add Row</button>
   </div>`;
+  }
+
+  // ── INSURANCE BODY ───────────────────────────────────────────────────────────
+  function renderInsuranceBody() {
+    const badgeClass = t => t==='term'?'badge-term':t==='health'?'badge-health':'badge-other';
+    const badgeLabel = t => t==='term'?'Term Life':t==='health'?'Health':'Other';
+
+    let html = insurances.map((ins,i) => `
+  <div class="ins-card" id="ins-${ins.id}" draggable="true" data-insid="${ins.id}">
+    <div class="ins-header">
+      <div style="display:flex;align-items:center;gap:8px;flex:1">
+        <div>
+          <div><span class="ins-type-badge ${badgeClass(ins.type)}">${badgeLabel(ins.type)}</span></div>
+          <div class="ins-name">${ins.emoji||'🛡️'} ${ins.name}</div>
+        </div>
+      </div>
+      <div class="ins-actions">
+        <button class="btn-icon" onclick="editInsurance(${ins.id})">✏️</button>
+        <button class="btn-icon del" onclick="delInsurance(${ins.id})">🗑</button>
+      </div>
+    </div>
+    <div class="ins-divider"></div>
+    <div class="ins-body">
+      <div class="ins-row"><span class="ins-lbl">Coverage</span><span class="ins-val">${ins.cover||'—'}</span></div>
+      ${ins.insurer ? `<div class="ins-row"><span class="ins-lbl">Insurer</span><span class="ins-val">${ins.insurer}</span></div>` : ''}
+      ${ins.premium ? `<div class="ins-row"><span class="ins-lbl">Premium</span><span class="ins-val">${ins.premium} / yr</span></div>` : ''}
+      ${ins.valid   ? `<div class="ins-row"><span class="ins-lbl">Valid Till</span><span class="ins-val">${ins.valid}</span></div>` : ''}
+      ${ins.note    ? `<div class="ins-row"><span class="ins-lbl">Note</span><span class="ins-val" style="font-weight:500;color:var(--text3)">${ins.note}</span></div>` : ''}
+    </div>
+  </div>`).join('');
+
+    html += `<div class="add-goal-row">
+    <button class="btn-add-inline" onclick="openAddInsurance()">Add Insurance Policy</button>
+  </div>`;
+    return html;
+  }
+
+  function openAddInsurance() {
+    editingInsId = null;
+    document.getElementById('m-ins-title').textContent = 'Add Insurance';
+    ['ins-name','ins-cover','ins-premium','ins-insurer','ins-valid','ins-note'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('ins-type').value = 'term';
+    document.getElementById('ins-emoji').value = '🛡️';
+    openModal('m-insurance');
+  }
+
+  function editInsurance(id) {
+    editingInsId = id;
+    const ins = insurances.find(x=>x.id===id);
+    if (!ins) return;
+    document.getElementById('m-ins-title').textContent = 'Edit Insurance';
+    document.getElementById('ins-type').value    = ins.type    || 'term';
+    document.getElementById('ins-emoji').value   = ins.emoji   || '🛡️';
+    document.getElementById('ins-name').value    = ins.name    || '';
+    document.getElementById('ins-cover').value   = ins.cover   || '';
+    document.getElementById('ins-premium').value = ins.premium || '';
+    document.getElementById('ins-insurer').value = ins.insurer || '';
+    document.getElementById('ins-valid').value   = ins.valid   || '';
+    document.getElementById('ins-note').value    = ins.note    || '';
+    openModal('m-insurance');
+  }
+
+  function saveInsurance() {
+    const name = document.getElementById('ins-name').value.trim();
+    if (!name) { toast('Please enter a policy name', true); return; }
+    const ins = {
+      id:      editingInsId || Date.now(),
+      type:    document.getElementById('ins-type').value,
+      emoji:   document.getElementById('ins-emoji').value || '🛡️',
+      name,
+      cover:   document.getElementById('ins-cover').value.trim(),
+      premium: document.getElementById('ins-premium').value.trim(),
+      insurer: document.getElementById('ins-insurer').value.trim(),
+      valid:   document.getElementById('ins-valid').value.trim(),
+      note:    document.getElementById('ins-note').value.trim()
+    };
+    if (editingInsId) {
+      const idx = insurances.findIndex(x=>x.id===editingInsId);
+      if (idx!==-1) insurances[idx] = ins;
+      toast('Policy updated ✓');
+    } else {
+      insurances.push(ins);
+      toast('Policy added ✓');
+    }
+    localStorage.setItem('ins', JSON.stringify(insurances));
+    closeModal('m-insurance');
+    openSections.add('insurance');
+    renderAll();
+  }
+
+  function delInsurance(id) {
+    if (!confirm('Delete this policy?')) return;
+    insurances = insurances.filter(x=>x.id!==id);
+    localStorage.setItem('ins', JSON.stringify(insurances));
+    renderAll();
+    toast('Policy deleted');
+  }
+
+  // Insurance card drag-to-reorder
+  function initInsuranceDrag() {
+    const cards = document.querySelectorAll('.ins-card');
+    let dragSrc = null;
+    cards.forEach(card => {
+      card.addEventListener('dragstart', e => {
+        dragSrc = card;
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      card.addEventListener('dragend', () => card.classList.remove('dragging'));
+      card.addEventListener('dragover', e => { e.preventDefault(); card.classList.add('drag-over'); });
+      card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+      card.addEventListener('drop', e => {
+        e.preventDefault();
+        card.classList.remove('drag-over');
+        if (dragSrc && dragSrc !== card) {
+          const srcId = parseInt(dragSrc.dataset.insid);
+          const tgtId = parseInt(card.dataset.insid);
+          const si = insurances.findIndex(x=>x.id===srcId);
+          const ti = insurances.findIndex(x=>x.id===tgtId);
+          const [moved] = insurances.splice(si, 1);
+          insurances.splice(ti, 0, moved);
+          localStorage.setItem('ins', JSON.stringify(insurances));
+          openSections.add('insurance');
+          renderAll();
+        }
+      });
+    });
   }
 
   // ── CATEGORY BODY ─────────────────────────────────────────────────────────
@@ -745,7 +1028,7 @@
     let html = '';
     items.forEach(g => { html += renderGoalCard(g); });
     html += `<div class="add-goal-row">
-    <button class="btn-add-inline" onclick="openAddModalForCat('${cat.replace(/'/g,"\\'")}')">＋ Add ${cat} Goal</button>
+    <button class="btn-add-inline" onclick="openAddModalForCat('${cat.replace(/'/g,"\\'")}')">Add ${cat} Goal</button>
   </div>`;
     return html;
   }
@@ -779,14 +1062,14 @@
       </div>
       <div class="goal-actions">
         <button class="btn-icon" onclick="editGoal(${g.id})">✏️</button>
-        <button class="btn-icon" onclick="delGoal(${g.id})">🗑</button>
+        <button class="btn-icon del" onclick="delGoal(${g.id})">🗑</button>
       </div>
     </div>
     <div class="goal-divider"></div>
     <div class="goal-body">
-      ${g.target ? `<div class="info-row"><span class="info-lbl">Target</span><span class="info-val o">${g.target}</span></div>` : ''}
+      ${g.target ? `<div class="info-row"><span class="info-lbl">Target</span><span class="info-val">${g.target}</span></div>` : ''}
       ${g.year   ? `<div class="info-row"><span class="info-lbl">Year</span><span class="info-val">${yr}</span></div>` : ''}
-      ${g.current ? `<div class="info-row"><span class="info-lbl">Status</span><span class="info-val" style="color:var(--text3)">${g.current}</span></div>` : ''}
+      ${g.current ? `<div class="info-row"><span class="info-lbl">Status</span><span class="info-val">${g.current}</span></div>` : ''}
       ${fundsHTML}
       ${g.note ? `<div class="note-box">${g.note.replace(/\n/g,'<br>')}</div>` : ''}
     </div>
@@ -802,11 +1085,11 @@
       <div class="tl-ev">${t.e}</div>
       <div class="tl-actions">
         <button class="tl-btn" onclick="editMilestone(${i})" title="Edit">✏️</button>
-        <button class="tl-btn" onclick="delMilestone(${i})" title="Delete">🗑</button>
+        <button class="tl-btn del" onclick="delMilestone(${i})" title="Delete">🗑</button>
       </div>
     </div>`).join('') +
             `<div class="tl-add-row">
-      <button class="tl-add-btn" onclick="openAddMilestone()">＋ Add Milestone</button>
+      <button class="tl-add-btn" onclick="openAddMilestone()">Add Milestone</button>
     </div></div>`;
   }
 
@@ -822,7 +1105,7 @@
       </div>`;
             }).join('') +
             `<div class="chk-add-row">
-      <button class="chk-add-btn" onclick="openAddCheckItem()">＋ Add Item</button>
+      <button class="chk-add-btn" onclick="openAddCheckItem()">Add Item</button>
     </div></div>`;
   }
 
@@ -865,6 +1148,11 @@
       fire:    document.getElementById('p-fire').value.trim()    || pf.fire
     };
     localStorage.setItem('pf', JSON.stringify(pf));
+    // Sync first two kn rows with updated emi/loan if they're the defaults
+    if (knRows[0] && knRows[0].l === 'Personal Loan EMI') knRows[0].v = pf.emi + ' / mo';
+    if (knRows[1] && knRows[1].l === 'Loan Closes')       knRows[1].v = pf.loan + ' 🎉';
+    if (knRows[2] && knRows[2].l === 'Post-Loan SIP')     knRows[2].v = pf.postsip;
+    localStorage.setItem('knr', JSON.stringify(knRows));
     closeModal('m-portfolio');
     renderAll();
     toast('Portfolio updated ✓');
@@ -1065,6 +1353,43 @@
     toast('Milestone deleted');
   }
 
+  // ── SECTION DRAG REORDER ─────────────────────────────────────────────────────
+  function initDragSections() {
+    const sections = document.querySelectorAll('.section[draggable="true"]');
+    let dragSrc = null;
+    sections.forEach(sec => {
+      sec.addEventListener('dragstart', e => {
+        // Only allow drag from handle
+        if (!e.target.classList.contains('drag-handle')) { e.preventDefault(); return; }
+        dragSrc = sec;
+        sec.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      sec.addEventListener('dragend', () => sec.classList.remove('dragging'));
+      sec.addEventListener('dragover', e => { e.preventDefault(); sec.classList.add('drag-over'); });
+      sec.addEventListener('dragleave', () => sec.classList.remove('drag-over'));
+      sec.addEventListener('drop', e => {
+        e.preventDefault();
+        sec.classList.remove('drag-over');
+        if (dragSrc && dragSrc !== sec) {
+          const srcId = dragSrc.dataset.sid;
+          const tgtId = sec.dataset.sid;
+          // Normalize: cat-X sections are stored as just X in sectionOrder
+          const norm = id => id.startsWith('cat-') ? id.replace('cat-','') : id;
+          const si = sectionOrder.indexOf(norm(srcId));
+          const ti = sectionOrder.indexOf(norm(tgtId));
+          if (si!==-1 && ti!==-1) {
+            const [moved] = sectionOrder.splice(si,1);
+            sectionOrder.splice(ti,0,moved);
+            localStorage.setItem('secOrder', JSON.stringify(sectionOrder));
+            renderAll();
+          }
+        }
+      });
+    });
+    initInsuranceDrag();
+  }
+
   // ── TOAST ─────────────────────────────────────────────────────────────────
   function toast(msg, isErr=false) {
     const t = document.getElementById('toast');
@@ -1073,7 +1398,24 @@
     setTimeout(() => t.className = 'toast', 2500);
   }
 
+  // ── THEME ────────────────────────────────────────────────────────────────────
+  function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    document.getElementById('theme-btn').textContent = isDark ? '☀️' : '🌙';
+  }
+
+  function initTheme() {
+    const saved = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'dark' || (!saved && prefersDark)) {
+      document.body.classList.add('dark');
+      document.getElementById('theme-btn').textContent = '☀️';
+    }
+  }
+
   // ── INIT ──────────────────────────────────────────────────────────────────
+  initTheme();
   fetchGoals();
 </script>
 </body>
